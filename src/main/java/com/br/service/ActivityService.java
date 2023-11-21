@@ -83,6 +83,7 @@ public class ActivityService {
                 if(activityRepository.allDependenciesCompleted(activityCopy.getId())){
                     activityCopy.setIsBlock(false);
                     activityCopy.setColorCard("#FFFFFF");
+                    activityCopy.setTagsEnum(INDEPENDENT);
                     activityRepository.save(activityCopy);
                 }
             }else{
@@ -126,8 +127,14 @@ public class ActivityService {
                     case INDEPENDENT:
                         if(nonNull(activity.getActivityDependentList()) &&
                                 !activity.getActivityDependentList().isEmpty()){
-                            activity.setColorCard("#FFA500");
-                            activity.setTagsEnum(DEPENDENT);
+
+                            if(!activityRepository.allDependenciesCompleted(activity.getId())){
+                                activity.setColorCard("#FFA500");
+                                activity.setTagsEnum(DEPENDENT);
+                            }else{
+                                activity.setColorCard("#FFFFFF");
+                            }
+
                         }else{
                             activity.setColorCard("#FFFFFF");
                         }
@@ -178,9 +185,11 @@ public class ActivityService {
                                         .build());
                             }
                         });
-                        activity.setIsBlock(true);
-                        activity.setColorCard("#FFA500");
-                        activity.setTagsEnum(DEPENDENT);
+                        if(!activityRepository.allDependenciesCompleted(activity.getId())){
+                            activity.setIsBlock(true);
+                            activity.setColorCard("#FFA500");
+                            activity.setTagsEnum(DEPENDENT);
+                        }
                         var activities1 = activityDependentService.findAll(ActivityDependentFilterType
                                 .builder().activityBranch(activity.getId()).build(), PageRequest.of(0, 9999, ASC, "id"));
                         if(isNull(activities1) || activities1.isEmpty()){
@@ -294,6 +303,10 @@ public class ActivityService {
                 if(nonNull(activitiesDependents) && !activitiesDependents.isEmpty()){
                     activitiesDependents.forEach(activityDependent -> {
                         var activityUpdate = findById(activityDependent.getActivityBranch().getId());
+                        if(!activityUpdate.getSectorActivityEnum().equals(DONE)){
+                            activityUpdate.setTagsEnum(DEPENDENT);
+                            activityUpdate.setIsBlock(true);
+                        }
                         update(activityUpdate);
                     });
                 }
@@ -323,8 +336,13 @@ public class ActivityService {
                     case INDEPENDENT:
                         if(nonNull(activity.getActivityDependentList()) &&
                                 !activity.getActivityDependentList().isEmpty()){
-                            activity.setColorCard("#FFA500");
-                            activity.setTagsEnum(DEPENDENT);
+                            if(!activityRepository.allDependenciesCompleted(activity.getId())){
+                                activity.setColorCard("#FFA500");
+                                activity.setTagsEnum(DEPENDENT);
+                                activity.setIsBlock(true);
+                            }else{
+                                activity.setColorCard("#FFFFFF");
+                            }
                         }else{
                             activity.setColorCard("#FFFFFF");
                         }
