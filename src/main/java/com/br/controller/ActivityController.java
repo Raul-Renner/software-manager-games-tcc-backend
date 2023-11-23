@@ -6,6 +6,7 @@ import com.br.service.ActivityService;
 import com.br.vo.ActivityUpdateVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -22,6 +23,8 @@ import static reactor.core.publisher.Mono.just;
 @RequiredArgsConstructor
 public class ActivityController {
 
+
+    @Autowired
     private final ActivityService activityService;
 
     @CrossOrigin

@@ -7,6 +7,7 @@ import com.br.repository.ActivityRepository;
 import com.br.type.ActivityDependentFilterType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static com.br.enums.SectorActivityEnum.DONE;
@@ -118,6 +120,8 @@ public class ActivityService {
                         if(nonNull(activity.getActivityDependentList()) &&
                                 !activity.getActivityDependentList().isEmpty()){
                             activity.setColorCard("#FFA500");
+
+
                         }else{
                             var activiyOld = findById(activity.getId());
                             activity.setColorCard(activiyOld.getColorCard());
@@ -134,7 +138,6 @@ public class ActivityService {
                             }else{
                                 activity.setColorCard("#FFFFFF");
                             }
-
                         }else{
                             activity.setColorCard("#FFFFFF");
                         }
@@ -189,6 +192,12 @@ public class ActivityService {
                             activity.setIsBlock(true);
                             activity.setColorCard("#FFA500");
                             activity.setTagsEnum(DEPENDENT);
+                        }else{
+                            if(activity.getTagsEnum().equals(DEPENDENT)){
+                                    activity.setColorCard("#FFFFFF");
+                                    activity.setTagsEnum(INDEPENDENT);
+                                    activity.setIsBlock(false);
+                            }
                         }
                         var activities1 = activityDependentService.findAll(ActivityDependentFilterType
                                 .builder().activityBranch(activity.getId()).build(), PageRequest.of(0, 9999, ASC, "id"));
@@ -198,6 +207,9 @@ public class ActivityService {
 
                         }
                     }else{
+                        if(!activities.isEmpty()){
+                            activities.forEach(activityDelete -> activityDependentService.processRemove(activityDelete.getId()));
+                        }
                         for(ActivityDependent activityDependent : activity.getActivityDependentList()){
                             var activitySource = activityRepository.findByActivityId(activityDependent.getActivitySource());
                             activityDependentService.saveActivityDependent(ActivityDependent.builder()
@@ -221,9 +233,17 @@ public class ActivityService {
 
             }else{
                 if(nonNull(activity.getActivityDependentList()) && !activity.getActivityDependentList().isEmpty()){
-                    activity.setIsBlock(true);
-                    activity.setColorCard("#FFA500");
-                    activity.setTagsEnum(DEPENDENT);
+                    if(!activityRepository.allDependenciesCompleted(activity.getId())){
+                        activity.setIsBlock(true);
+                        activity.setColorCard("#FFA500");
+                        activity.setTagsEnum(DEPENDENT);
+                    }else{
+                        //if(activity.getTagsEnum().equals(DEPENDENT)){
+                            activity.setColorCard("#FFFFFF");
+                            activity.setTagsEnum(INDEPENDENT);
+                            activity.setIsBlock(false);
+                    //    }
+                    }
 
                     for(ActivityDependent activityDependent : activity.getActivityDependentList()){
                         var activitySource = activityRepository.findByActivityId(activityDependent.getActivitySource());
@@ -268,25 +288,29 @@ public class ActivityService {
         if(nonNull(activityDependentsList) && !activityDependentsList.getContent().isEmpty()){
             activityDependentsList.forEach(activityDependent -> activityDependentService.delete(activityDependent.getId()));
         }
-        activityDependentsList = activityDependentService.findAll(ActivityDependentFilterType
-                        .builder()
-                        .activitySource(id).build(), PageRequest.of(0, 9999, ASC, "id"));
+
+        activityDependentsList = activityDependentService.findAll(ActivityDependentFilterType.builder()
+                        .activitySource(id).build(),
+                        PageRequest.of(0, 9999, ASC, "id"));
         if(nonNull(activityDependentsList) && !activityDependentsList.getContent().isEmpty()){
             activityDependentsList.forEach(activityDependent -> {
-                var activityBranch  = findById(activityDependent.getActivityBranch().getId());
-                if(activityBranch.getActivityDependentList().size() == 1){
-                    activityBranch.setIsBlock(false);
-                    activityBranch.setTagsEnum(INDEPENDENT);
-                    activityBranch.getActivityDependentList().clear();
-                    update(activityBranch);
-                }else{
-                    activityDependentService.delete(activityDependent.getId());
+                var activityBranch = findById(activityDependent.getActivityBranch().getId());
+                if(!activityBranch.getActivityDependentList().isEmpty()){
+                    if(activityBranch.getActivityDependentList().size() == 1){
+                        activityBranch.setIsBlock(false);
+                        activityBranch.setTagsEnum(INDEPENDENT);
+                        activityBranch.getActivityDependentList().clear();
+                    }
                 }
+                    activityBranch.getActivityDependentList().remove(activityDependent);
 
+                    update(activityBranch);
             });
         }
 
         delete(id);
+
+
     }
 
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
@@ -297,20 +321,6 @@ public class ActivityService {
             checkDependents(activity.getId());
         }else{
             var activityAux = findById(activity.getId());
-            if(activityAux.getSectorActivityEnum().equals(DONE)){
-                var activitiesDependents = activityDependentService.findAll(ActivityDependentFilterType.builder().activitySource(activity.getId()).build(),
-                        PageRequest.of(0, 9999, ASC, "id"));
-                if(nonNull(activitiesDependents) && !activitiesDependents.isEmpty()){
-                    activitiesDependents.forEach(activityDependent -> {
-                        var activityUpdate = findById(activityDependent.getActivityBranch().getId());
-                        if(!activityUpdate.getSectorActivityEnum().equals(DONE)){
-                            activityUpdate.setTagsEnum(DEPENDENT);
-                            activityUpdate.setIsBlock(true);
-                        }
-                        update(activityUpdate);
-                    });
-                }
-            }
             if(nonNull(activity.getTagsEnum())){
                 switch (activity.getTagsEnum()){
                     case URGENT:
@@ -358,7 +368,24 @@ public class ActivityService {
                         break;
                 }
             }
-            activityRepository.save(activity);
+
+            if(activityAux.getSectorActivityEnum().equals(DONE)){
+                var activitySaved = activityRepository.save(activity);
+                var activitiesDependents = activityDependentService.findAll(ActivityDependentFilterType.builder().activitySource(activitySaved.getId()).build(),
+                        PageRequest.of(0, 9999, ASC, "id"));
+                if(nonNull(activitiesDependents) && !activitiesDependents.isEmpty()){
+                    activitiesDependents.forEach(activityDependent -> {
+                        var activityUpdate = findById(activityDependent.getActivityBranch().getId());
+                        if(!activityUpdate.getSectorActivityEnum().equals(DONE)){
+                            activityUpdate.setTagsEnum(DEPENDENT);
+                            activityUpdate.setIsBlock(true);
+                        }
+                        update(activityUpdate);
+                    });
+                }
+            }else{
+                activityRepository.save(activity);
+            }
         }
     }
 
