@@ -8,7 +8,6 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
-import static javax.persistence.FetchType.EAGER;
 
 @Data
 @Entity
@@ -60,8 +59,13 @@ public class Activity implements Serializable {
     @Column(name = "is_blocked")
     private Boolean isBlock;
 
-    @OneToMany(mappedBy = "activityBranch",fetch = EAGER)
+    @OneToMany(mappedBy = "activityBranch")
     private List<ActivityDependent> activityDependentList;
+
+    @ManyToOne
+    @JsonIgnore
+    @JoinColumn(name = "id_project")
+    private Project project;
 
     public Activity() {
         this.identifier = "#" + counter++;
