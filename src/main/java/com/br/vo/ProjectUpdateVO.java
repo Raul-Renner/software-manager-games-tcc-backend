@@ -50,10 +50,13 @@ public class ProjectUpdateVO implements Serializable {
 
     private List<@Valid ActivitySaveVO> activities;
 
+    private Boolean isFinished;
+
     public Project toEntity() {
         return Project.builder()
                 .id(id)
                 .name(name)
+                .isFinished(nonNull(isFinished) ? isFinished : false)
                 .description(description)
                 .organization(Organization.builder().id(organizationId).build())
                 .members(nonNull(members) && !members.isEmpty() ?

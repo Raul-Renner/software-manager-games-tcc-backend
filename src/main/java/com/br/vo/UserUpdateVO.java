@@ -4,6 +4,7 @@ import com.br.entities.Organization;
 import com.br.entities.Project;
 import com.br.entities.User;
 import com.br.entities.UserInformation;
+import com.br.enums.ProfileEnum;
 import com.br.validation.ValidOrganization;
 import com.br.validation.ValidProject;
 import com.br.validation.ValidUser;
@@ -59,7 +60,7 @@ public class UserUpdateVO implements Serializable {
     @Pattern(regexp = "^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", message = "Email Invalido")
     private String email;
 
-    private String profileEnum;
+    private ProfileEnum profileEnum;
 
     @ValidOrganization
     private Long organizationId;
@@ -72,11 +73,11 @@ public class UserUpdateVO implements Serializable {
                 .id(id)
                 .login(login)
                 .password(password)
+                .profile(profileEnum)
                 .userInformation(UserInformation.builder()
                         .name(name)
                         .username(username)
-                        .email(email)
-                        .profileEnum(profileEnum).build())
+                        .email(email).build())
                 .organization(Organization.builder().id(organizationId).build()).build();
 
                 if(nonNull(projects)){

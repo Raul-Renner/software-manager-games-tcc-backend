@@ -2,18 +2,25 @@ package com.br.service;
 
 import com.br.entities.User;
 import com.br.repository.UserRepository;
+import com.br.type.ProjectFilterType;
+import com.br.type.UserFilterType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.awt.print.Pageable;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.br.fieldQueries.ProjectFieldQuery.ORGANIZATION_ID_PROJECT_ID;
 import static java.util.List.of;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.springframework.data.domain.Sort.Direction.ASC;
 
 @RequiredArgsConstructor
 @Service
@@ -39,7 +46,7 @@ public class UserService {
           if(nonNull(userCopy.getProjects()) && !userCopy.getProjects().isEmpty()){
               userCopy.getProjects().forEach(projectAux -> {
                   var project = projectService.findProjectById(projectAux.getId());
-//                  project.getMembers().add(userCopy);
+                  project.getMembers().add(userCopy);
                   projectService.update(project);
               });
           }
@@ -66,9 +73,9 @@ public class UserService {
     }
 
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
-
     public void processUpdate(User user){
         try {
+            var projectFilterIdsDelete = new ArrayList<Long>();
 
             var userUpdate = userRepository.findById(user.getId()).orElse(null);
             if(isNull(userUpdate)){
@@ -79,12 +86,15 @@ public class UserService {
                 user.getProjects().forEach(projectAux -> {
                     var project = projectService.findProjectById(projectAux.getId());
                     if(!projectService.getMembersProject(user.getId(), projectAux.getId())){
-//                        project.getMembers().add(user);
+                        project.getMembers().add(user);
                         projectService.update(project);
                     }
-
+                    projectFilterIdsDelete.add(projectAux.getId());
                 });
             }
+
+              projectService.processUpdateProjectsUser(user.getId(), user.getOrganization().getId(), projectFilterIdsDelete);
+
 
           userRepository.save(user);
 
@@ -103,4 +113,12 @@ public class UserService {
         return userRepository.findOne(example).orElse(null);
     }
 
+    @Transactional(readOnly = true)
+    public Page<User> findAllBy(UserFilterType filter){
+        return userRepository.findAll(
+                filter.getOrganizationId(),
+                filter.getProjectId(),
+                filter.getUserId(),
+                PageRequest.of(0, 9999, ASC, "id"));
+    }
 }

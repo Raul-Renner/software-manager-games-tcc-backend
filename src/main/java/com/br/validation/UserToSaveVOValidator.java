@@ -1,7 +1,6 @@
 package com.br.validation;
 
 import com.br.service.OrganizationService;
-import com.br.service.ProjectService;
 import com.br.service.UserService;
 import com.br.vo.UserSaveVO;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +22,6 @@ import static java.util.Objects.nonNull;
 @RequiredArgsConstructor
 public class UserToSaveVOValidator implements ConstraintValidator<ValidUserToSaveVO, UserSaveVO> {
 
-    private final ProjectService projectService;
-
-
     private final OrganizationService organizationService;
 
     private final UserService userService;
@@ -45,10 +41,11 @@ public class UserToSaveVOValidator implements ConstraintValidator<ValidUserToSav
         }else if(userService.existBy(EMAIL.existBy(asList(value.getEmail())))){
             context.buildConstraintViolationWithTemplate("Email já cadastrado no nosso sistema.").addConstraintViolation();
             isValid = false;
-        }else if(userService.existBy(LOGIN.existBy(asList(value.getLogin())))){
-            context.buildConstraintViolationWithTemplate("o nome para login já existe no nosso sistema.").addConstraintViolation();
-            isValid = false;
         }
+//        else if(userService.existBy(LOGIN.existBy(asList(value.getLogin())))){
+//            context.buildConstraintViolationWithTemplate("o nome para login já existe no nosso sistema.").addConstraintViolation();
+//            isValid = false;
+//        }
         return isValid;
     }
 }

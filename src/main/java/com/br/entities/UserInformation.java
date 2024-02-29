@@ -34,6 +34,4 @@ public class UserInformation implements Serializable {
     @Column(name = "email")
     private String email;
 
-    @Column(name = "profile")
-    private String profileEnum;
 }

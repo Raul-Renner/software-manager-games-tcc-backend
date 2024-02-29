@@ -39,12 +39,15 @@ public class Project implements Serializable {
     @JoinColumn(name = "id_organization")
     private Organization organization;
 
-    @ManyToMany(fetch = LAZY, cascade = PERSIST)
+    @ManyToMany
     @JoinTable(name = "project_members", joinColumns = {
-            @JoinColumn(name = "id_project", nullable = false, unique = true)},
-            inverseJoinColumns = {@JoinColumn(name = "id_user", nullable = false, unique = true)})
+            @JoinColumn(name = "id_project", nullable = false)},
+            inverseJoinColumns = {@JoinColumn(name = "id_user", nullable = false)})
     private List<User> members;
 
     @OneToMany(mappedBy = "project")
     private List<Activity> activities;
+
+    @Column(name = "is_finished")
+    private Boolean isFinished;
 }

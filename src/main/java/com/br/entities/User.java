@@ -1,6 +1,7 @@
 package com.br.entities;
 
 
+import com.br.enums.ProfileEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -11,6 +12,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import static javax.persistence.CascadeType.*;
+import static javax.persistence.EnumType.STRING;
 import static javax.persistence.FetchType.LAZY;
 
 @Data
@@ -51,5 +53,9 @@ public class User implements Serializable {
     @JsonIgnore
     @ManyToMany(mappedBy = "members", cascade = REMOVE, fetch = LAZY)
     private List<Project> projects;
+
+    @Enumerated(STRING)
+    @Column(name = "tp_profile")
+    private ProfileEnum profile;
 
 }

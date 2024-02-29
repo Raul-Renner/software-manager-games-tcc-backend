@@ -60,7 +60,7 @@ public class ProjectController {
     }
 
     @CrossOrigin
-    @GetMapping
+    @GetMapping("/findAllBy")
     public Mono<?> findAllBy(ProjectFilterType filter) {
         return just(projectService.findAll(filter, PageRequest.of(0, 9999, ASC, "id")));
     }

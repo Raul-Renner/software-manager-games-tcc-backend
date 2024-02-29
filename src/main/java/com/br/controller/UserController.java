@@ -2,6 +2,7 @@ package com.br.controller;
 
 import com.br.service.UserService;
 
+import com.br.type.UserFilterType;
 import com.br.validation.ValidUser;
 import com.br.vo.UserSaveVO;
 import com.br.vo.UserUpdateVO;
@@ -12,13 +13,14 @@ import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
 
-import static org.springframework.http.ResponseEntity.ok;
-import static reactor.core.publisher.Mono.empty;
-import static reactor.core.publisher.Mono.just;
+import java.util.List;
 
+import static org.springframework.http.ResponseEntity.ok;
+import static reactor.core.publisher.Mono.*;
+import static com.br.fieldQueries.UserFieldQuery.valueOf;
 @Slf4j
 @RestController
-@RequestMapping("/api/org/project/colaborator")
+@RequestMapping("/api/org/colaborator")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -53,6 +55,20 @@ public class UserController {
         user.setId(id);
         userService.processUpdate(user);
         return just(ok().build());
+    }
+
+    @GetMapping
+    @CrossOrigin
+    public Mono<?> findAllBy(UserFilterType filter){
+        log.info("Searching all profiles");
+        return just(userService.findAllBy(filter));
+    }
+
+    @CrossOrigin
+    @GetMapping("/find-by")
+    public Mono<?> findBy(@RequestParam String field, @RequestParam List<String> values) {
+        log.info("Searching user by field: {} and value {}.", field, values);
+        return justOrEmpty(userService.findBy(valueOf(field).findBy(values)));
     }
 
 }

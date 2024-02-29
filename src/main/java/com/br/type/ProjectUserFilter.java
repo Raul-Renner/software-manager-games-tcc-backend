@@ -8,14 +8,10 @@ import java.util.List;
 
 @Data
 @Builder
-public class ProjectFilterType implements Serializable {
+public class ProjectUserFilter implements Serializable {
     private Long organizationId;
 
     private List<Long> projectIds;
 
-    private Boolean isFinished;
-
     private Long userId;
-
-
 }

@@ -103,8 +103,7 @@ public enum UserFieldQuery {
 
         @Override
         public Example<User> findBy(List<String> values) {
-            var user = new User();
-            user.setId(parseLong(values.get(0)));
+            var user = User.builder().id(parseLong(values.get(0))).build();
             return of(user, matchingAny());
         }
     },

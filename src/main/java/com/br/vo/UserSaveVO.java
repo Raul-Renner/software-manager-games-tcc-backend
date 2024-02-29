@@ -4,6 +4,7 @@ import com.br.entities.Organization;
 import com.br.entities.Project;
 import com.br.entities.User;
 import com.br.entities.UserInformation;
+import com.br.enums.ProfileEnum;
 import com.br.validation.ValidOrganization;
 import com.br.validation.ValidProject;
 import com.br.validation.ValidUserToSaveVO;
@@ -36,12 +37,12 @@ public class UserSaveVO implements Serializable {
     @Id
     private Long id;
 
-    @NotBlank(message = "O Login é obrigatório")
-    @Size(min = 3, max = 20, message = "O nome de usuario deve conter entre 3 e 20 caracteres.")
+//    @NotBlank(message = "O Login é obrigatório")
+//    @Size(min = 3, max = 20, message = "O nome de usuario deve conter entre 3 e 20 caracteres.")
     private String login;
 
-    @NotNull(message = "A senha é obrigatório.")
-    @NotBlank(message = "A senha é obrigatório.")
+//    @NotNull(message = "A senha é obrigatório.")
+//    @NotBlank(message = "A senha é obrigatório.")
     private String password;
 
     @NotNull(message = "O nome é obrigatório.")
@@ -58,8 +59,7 @@ public class UserSaveVO implements Serializable {
     @Pattern(regexp = "^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", message = "Email Invalido")
     private String email;
 
-    //mudar futuramente v
-    private String profileEnum;
+    private ProfileEnum profileEnum;
 
     @ValidOrganization
     private Long organizationId;
@@ -72,11 +72,11 @@ public class UserSaveVO implements Serializable {
                 .id(id)
                 .login(login)
                 .password(password)
+                .profile(profileEnum)
                 .userInformation(UserInformation.builder()
                         .name(name)
                         .username(username)
-                        .email(email)
-                        .profileEnum(profileEnum).build())
+                        .email(email).build())
                 .organization(Organization.builder().id(organizationId).build()).build();
                 if(nonNull(projects)){
                     user.setProjects(projects.stream().map(id ->
