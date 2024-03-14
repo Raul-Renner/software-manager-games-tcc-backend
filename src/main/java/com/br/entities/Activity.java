@@ -37,6 +37,9 @@ public class Activity implements Serializable {
     @Column(name = "time_estimated")
     private String estimatedTime;
 
+    @Column(name = "time_used")
+    private String usedTime;
+
     @Column(name="sector_activity")
     @Enumerated(EnumType.STRING)
     private SectorActivityEnum sectorActivityEnum;

@@ -44,6 +44,8 @@ public class ActivitySaveVO {
 
     private String estimatedTime;
 
+    private String usedTime;
+
     private SectorActivityEnum sectorActivityEnum;
 
     private StatusActivityEnum statusActivityEnum;

@@ -45,6 +45,8 @@ public class ActivityUpdateVO {
 
     private String estimatedTime;
 
+    private String usedTime;
+
     private SectorActivityEnum sectorActivityEnum;
 
     private StatusActivityEnum statusActivityEnum;
@@ -80,6 +82,7 @@ public class ActivityUpdateVO {
                 .colorCard(nonNull(colorCard)  ? colorCard : "#FFFFFF")
                 .user(nonNull(userSaveVO) ? userSaveVO.toEntity() : null)
                 .board(Board.builder().id(boardId).build())
+                .usedTime(isNull(usedTime) ? "-" : usedTime)
                 .build();
 
         return activity;
