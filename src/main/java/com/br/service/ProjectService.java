@@ -25,9 +25,13 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
 
+    private final BoardService boardService;
+
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
     public void save(Project project) {
         try {
+            var board = boardService.createBoard();
+            project.setBoard(board);
             projectRepository.save(project);
         }catch (Exception e){
             throw new RuntimeException("Erro ao criar novo projeto");

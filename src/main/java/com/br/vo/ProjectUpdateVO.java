@@ -1,6 +1,5 @@
 package com.br.vo;
 
-import com.br.entities.Activity;
 import com.br.entities.Organization;
 import com.br.entities.Project;
 import com.br.entities.User;
@@ -61,9 +60,7 @@ public class ProjectUpdateVO implements Serializable {
                 .organization(Organization.builder().id(organizationId).build())
                 .members(nonNull(members) && !members.isEmpty() ?
                         members.stream().map(id -> User.builder().id(id).build())
-                                .collect(Collectors.toList()) : new ArrayList<>())
-                .activities(nonNull(activities) && !activities.isEmpty() ? (List<Activity>) activities.stream()
-                        .map(ActivitySaveVO::toEntity).collect(Collectors.toSet()) : null).build();
+                                .collect(Collectors.toList()) : new ArrayList<>()).build();
 
     }
 }

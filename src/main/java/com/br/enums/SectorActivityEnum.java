@@ -10,7 +10,9 @@ public enum SectorActivityEnum {
     SOUND(6, "SOUND"),
     INTEGRATION(7, "INTEGRATION"),
     TEST(8, "TEST"),
-    DONE(9, "DONE");
+    DONE(9, "DONE"),
+
+    PREPARATION(9, "PREPARATION");
 
 
     private final Integer id;

@@ -2,7 +2,6 @@ package com.br.service;
 
 import com.br.entities.User;
 import com.br.repository.UserRepository;
-import com.br.type.ProjectFilterType;
 import com.br.type.UserFilterType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
@@ -12,9 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
-import java.awt.print.Pageable;
 import java.util.ArrayList;
-import java.util.List;
 
 import static com.br.fieldQueries.ProjectFieldQuery.ORGANIZATION_ID_PROJECT_ID;
 import static java.util.List.of;
@@ -51,7 +48,7 @@ public class UserService {
               });
           }
         }catch (Exception e){
-            throw new RuntimeException("Erro ao registrar novo usuário");
+            throw new RuntimeException(e.getMessage());
         }
     }
 

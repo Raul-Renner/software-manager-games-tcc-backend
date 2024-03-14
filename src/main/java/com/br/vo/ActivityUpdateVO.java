@@ -1,7 +1,9 @@
 package com.br.vo;
 
 import com.br.entities.Activity;
+import com.br.entities.Board;
 import com.br.enums.*;
+import com.br.validation.ValidBoard;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -57,6 +59,11 @@ public class ActivityUpdateVO {
 
     private String colorCard;
 
+    @ValidBoard
+    private Long boardId;
+
+    private UserSaveVO userSaveVO;
+
     public Activity toEntity(){
         var activity = Activity.builder()
                 .id(id)
@@ -71,6 +78,8 @@ public class ActivityUpdateVO {
                 .tagsEnum(nonNull(tagsEnum) ? tagsEnum : INDEPENDENT)
                 .statusPriorityEnum(nonNull(statusPriorityEnum) ? statusPriorityEnum : LOW)
                 .colorCard(nonNull(colorCard)  ? colorCard : "#FFFFFF")
+                .user(nonNull(userSaveVO) ? userSaveVO.toEntity() : null)
+                .board(Board.builder().id(boardId).build())
                 .build();
 
         return activity;

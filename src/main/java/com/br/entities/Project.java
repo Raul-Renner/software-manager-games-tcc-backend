@@ -9,8 +9,8 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
-import static javax.persistence.CascadeType.PERSIST;
-import static javax.persistence.FetchType.LAZY;
+import static javax.persistence.CascadeType.ALL;
+
 
 @Data
 @Entity
@@ -45,9 +45,13 @@ public class Project implements Serializable {
             inverseJoinColumns = {@JoinColumn(name = "id_user", nullable = false)})
     private List<User> members;
 
-    @OneToMany(mappedBy = "project")
-    private List<Activity> activities;
+//    @OneToMany(mappedBy = "project")
+//    private List<Activity> activities;
 
     @Column(name = "is_finished")
     private Boolean isFinished;
+
+    @OneToOne(cascade = ALL)
+    @JoinColumn(name = "id_board")
+    private Board board;
 }

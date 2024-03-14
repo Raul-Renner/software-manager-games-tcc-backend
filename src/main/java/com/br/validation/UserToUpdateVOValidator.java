@@ -45,7 +45,6 @@ public class UserToUpdateVOValidator implements ConstraintValidator<ValidUserToU
                 context.buildConstraintViolationWithTemplate("o nome para login já existe no nosso sistema.").addConstraintViolation();
                 isValid = false;
             }
-
         }
         return isValid;
     }

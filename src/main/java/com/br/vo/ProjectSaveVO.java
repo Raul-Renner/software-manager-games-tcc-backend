@@ -10,7 +10,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -43,7 +42,7 @@ public class ProjectSaveVO implements Serializable {
 
     private List<Long> members;
 
-    private List<@Valid ActivitySaveVO> activities;
+//    private List<@Valid ActivitySaveVO> activities;
 
     private Boolean isFinished;
 
@@ -56,9 +55,7 @@ public class ProjectSaveVO implements Serializable {
                 .organization(Organization.builder().id(organizationId).build())
                 .members(nonNull(members) && !members.isEmpty() ?
                         members.stream().map(id -> User.builder().id(id).build())
-                        .collect(Collectors.toList()) : new ArrayList<>())
-                .activities(nonNull(activities) && !activities.isEmpty() ? (List<Activity>) activities.stream()
-                        .map(ActivitySaveVO::toEntity).collect(Collectors.toSet()) : null).build();
+                        .collect(Collectors.toList()) : new ArrayList<>()).build();
 
     }
 }

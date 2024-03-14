@@ -2,7 +2,9 @@ package com.br.vo;
 
 import com.br.entities.Activity;
 import com.br.entities.ActivityDependent;
+import com.br.entities.Board;
 import com.br.enums.*;
+import com.br.validation.ValidBoard;
 import lombok.*;
 
 import javax.persistence.Id;
@@ -56,6 +58,11 @@ public class ActivitySaveVO {
 
     private String colorCard;
 
+    private UserSaveVO userSaveVO;
+
+    @ValidBoard
+    private Long boardId;
+
     public Activity toEntity(){
         var activity = Activity.builder()
                 .id(id)
@@ -74,6 +81,8 @@ public class ActivitySaveVO {
                 .tagsEnum(nonNull(tagsEnum) ? tagsEnum : INDEPENDENT)
                 .statusPriorityEnum(nonNull(statusPriorityEnum) ? statusPriorityEnum : LOW)
                 .colorCard(nonNull(colorCard)  ? colorCard : "#FFFFFF")
+                .user(nonNull(userSaveVO) ? userSaveVO.toEntity() : null)
+                .board(Board.builder().id(boardId).build())
                 .build();
 
         return activity;
