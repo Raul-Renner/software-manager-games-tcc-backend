@@ -4,14 +4,16 @@ import com.br.service.OrganizationService;
 import com.br.service.ProjectService;
 import com.br.service.UserService;
 import com.br.vo.UserSaveVO;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import java.util.List;
 
 import static com.br.fieldQueries.OrganizationFieldQuery.ORGANIZATION_ID;
 
+import static com.br.fieldQueries.UserFieldQuery.*;
 import static java.util.Arrays.asList;
 
 
@@ -22,8 +24,6 @@ public class UserToSaveVOValidator implements ConstraintValidator<ValidUserToSav
     private final OrganizationService organizationService;
 
     private final UserService userService;
-
-    private final ProjectService projectService;
 
     @Override
     public void initialize(ValidUserToSaveVO constraintAnnotation) {
@@ -38,10 +38,14 @@ public class UserToSaveVOValidator implements ConstraintValidator<ValidUserToSav
             context.buildConstraintViolationWithTemplate("Organização informada não existe.").addConstraintViolation();
             isValid = false;
         }
-//        else if(userService.existBy(LOGIN.existBy(asList(value.getLogin())))){
-//            context.buildConstraintViolationWithTemplate("o nome para login já existe no nosso sistema.").addConstraintViolation();
-//            isValid = false;
-//        }
+        else if(userService.existBy(LOGIN.existBy(asList(value.getLogin())))){
+            context.buildConstraintViolationWithTemplate("o nome para login já existe no nosso sistema.").addConstraintViolation();
+            isValid = false;
+        }else if(userService.existBy(EMAIL.existBy(asList(value.getEmail())))) {
+            context.buildConstraintViolationWithTemplate("Email já cadastrado no nosso sistema.").addConstraintViolation();
+            isValid = false;
+        }
+
         return isValid;
     }
 }

@@ -1,16 +1,15 @@
 package com.br.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.persistence.*;
 import lombok.*;
 
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
-import static javax.persistence.FetchType.EAGER;
-import static javax.persistence.FetchType.LAZY;
+import static jakarta.persistence.FetchType.EAGER;
+
 
 @Data
 @Entity
@@ -32,17 +31,15 @@ public class Organization implements Serializable {
     @Column(name = "description")
     private String description;
 
-    @OneToMany(mappedBy = "organization",fetch = LAZY)
+    @OneToMany(mappedBy = "organization",fetch = EAGER)
     private List<User> owners;
 
     @OneToMany(mappedBy = "organization",fetch = EAGER)
     private List<Project> projects;
 
-    @Column(name = "login")
-    private String login;
 
-    @Column(name = "password")
-    private String password;
+    @Column(name = "email")
+    private String email;
 
 
 }

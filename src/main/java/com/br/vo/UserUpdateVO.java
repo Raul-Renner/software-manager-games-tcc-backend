@@ -9,16 +9,16 @@ import com.br.validation.ValidOrganization;
 import com.br.validation.ValidProject;
 import com.br.validation.ValidUser;
 import com.br.validation.ValidUserToUpdateVO;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Id;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,6 +44,7 @@ public class UserUpdateVO implements Serializable {
 
     @NotNull(message = "A senha é obrigatório.")
     @NotBlank(message = "A senha é obrigatório.")
+    @Size(min = 8, max = 20, message = "A senha de usuario deve conter entre 8 e 20 caracteres.")
     private String password;
 
     @NotNull(message = "O nome é obrigatório.")

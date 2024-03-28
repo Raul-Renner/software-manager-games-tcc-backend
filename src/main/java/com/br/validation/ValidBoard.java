@@ -1,8 +1,8 @@
 package com.br.validation;
 
 import jakarta.validation.Constraint;
+import jakarta.validation.Payload;
 
-import javax.validation.Payload;
 import java.lang.annotation.*;
 
 import static java.lang.annotation.ElementType.*;

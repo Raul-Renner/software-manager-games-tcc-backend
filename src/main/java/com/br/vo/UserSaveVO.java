@@ -8,16 +8,15 @@ import com.br.enums.ProfileEnum;
 import com.br.validation.ValidOrganization;
 import com.br.validation.ValidProject;
 import com.br.validation.ValidUserToSaveVO;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 
 import java.io.Serializable;
 import java.util.List;
@@ -37,12 +36,13 @@ public class UserSaveVO implements Serializable {
     @Id
     private Long id;
 
-//    @NotBlank(message = "O Login é obrigatório")
-//    @Size(min = 3, max = 20, message = "O nome de usuario deve conter entre 3 e 20 caracteres.")
+    @NotBlank(message = "O Login é obrigatório")
+    @Size(min = 3, max = 20, message = "O nome de usuario deve conter entre 3 e 20 caracteres.")
     private String login;
 
-//    @NotNull(message = "A senha é obrigatório.")
-//    @NotBlank(message = "A senha é obrigatório.")
+    @NotNull(message = "A senha é obrigatório.")
+    @NotBlank(message = "A senha é obrigatório.")
+    @Size(min = 8, max = 20, message = "A sebga deve conter entre 8 e 20 caracteres.")
     private String password;
 
     @NotNull(message = "O nome é obrigatório.")

@@ -1,16 +1,16 @@
 package com.br.validation;
 
 import com.br.service.ProjectService;
+
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;
 
-import static com.br.fieldQueries.OrganizationFieldQuery.ORGANIZATION_ID;
-import static com.br.fieldQueries.UserFieldQuery.EMAIL;
-import static com.br.fieldQueries.UserFieldQuery.LOGIN;
+
+
+import static com.br.fieldQueries.ProjectFieldQuery.PROJECT_ID;
 import static java.util.Arrays.asList;
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 
 @RequiredArgsConstructor
 public class ProjectValidator implements ConstraintValidator<ValidProject, Long> {
@@ -23,6 +23,9 @@ public class ProjectValidator implements ConstraintValidator<ValidProject, Long>
         var isValid = true;
         if (isNull(projectService.findProjectById(value))) {
             context.buildConstraintViolationWithTemplate("Um dos projetos informados não existe ou não faz parte dessa organização.").addConstraintViolation();
+            isValid = false;
+        }else if(!projectService.existBy(PROJECT_ID.existBy(asList(String.valueOf(value))))){
+            context.buildConstraintViolationWithTemplate("Projeto não encontrado.").addConstraintViolation();
             isValid = false;
         }
         return isValid;

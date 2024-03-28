@@ -3,12 +3,12 @@ package com.br.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 import java.io.Serializable;
 
 @Data
@@ -29,8 +29,8 @@ public class ColumnBoard implements Serializable {
     @Column(name = "name")
     private String name;
 
-    @Column(name="sector_activity")
-    private String sectorActivity;
+    @Column(name="sector_description")
+    private String description;
 
     @ManyToOne
     @JsonIgnore

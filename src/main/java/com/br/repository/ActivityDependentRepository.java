@@ -21,18 +21,7 @@ public interface ActivityDependentRepository extends JpaRepository<ActivityDepen
                                     @Param("activitySource") Long activitySource,
                                     @Param("activityBranch") Long activityBranch,
                                     Pageable pageable);
-//    @Query("SELECT DISTINCT ad FROM ActivityDependent ad " +
-//            "WHERE (COALESCE(:ids) IS NULL OR ad.id NOT IN :idsNotIn) " +
-//            "AND (COALESCE(:activitySource) IS NULL OR ad.activitySource IN :activitySource) " +
-//            "AND (COALESCE(:activityBranch) IS NULL OR ad.activityBranch.id IN :activityBranch)")
-//    Page<ActivityDependent> findAll(@Param("activitySource") List<Long> idsNotIn,
-//                                    @Param("activitySource") Long activitySource,
-//                                    @Param("activityBranch") Long activityBranch,
-//                                    Pageable pageable);
 
-    @Query("SELECT COUNT(a) = 0 FROM ActivityDependent ad WHERE EXISTS( " +
-            " SELECT ad FROM Activity a WHERE ad.activitySource =: activitySourceId " +
-            " AND ad.activitySource = a.id AND a.sectorActivityEnum != 'DONE')")
-    Boolean allDependenciesCompleted(Long activitySourceId);
+
 
 }

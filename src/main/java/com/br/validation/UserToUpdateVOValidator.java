@@ -1,14 +1,13 @@
 package com.br.validation;
 
 import com.br.repository.UserRepository;
-import com.br.service.ProjectService;
 import com.br.service.UserService;
 import com.br.vo.UserUpdateVO;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 import java.util.List;
 
 import static com.br.fieldQueries.UserFieldQuery.*;
@@ -18,7 +17,6 @@ import static java.util.Arrays.asList;
 @RequiredArgsConstructor
 public class UserToUpdateVOValidator implements ConstraintValidator<ValidUserToUpdateVO, UserUpdateVO> {
 
-    private final ProjectService projectService;
 
     private final UserRepository userRepository;
 

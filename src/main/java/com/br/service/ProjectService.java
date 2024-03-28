@@ -1,6 +1,5 @@
 package com.br.service;
 
-
 import com.br.entities.Project;
 import com.br.repository.ProjectRepository;
 import com.br.type.ProjectFilterType;
@@ -41,6 +40,8 @@ public class ProjectService {
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
     public void update(Project project) {
         try {
+            var projectOld = findProjectById(project.getId());
+            project.setBoard(projectOld.getBoard());
             projectRepository.save(project);
         }catch (Exception e){
             throw new RuntimeException("Erro ao atualizar dados do projeto");

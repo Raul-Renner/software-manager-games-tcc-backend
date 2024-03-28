@@ -1,7 +1,8 @@
 package com.br.fieldQueries;
 
 import com.br.entities.Organization;
-import com.br.entities.Project;
+import com.br.entities.User;
+import com.br.entities.UserInformation;
 import org.springframework.data.domain.Example;
 
 import java.util.List;
@@ -28,6 +29,20 @@ public enum OrganizationFieldQuery {
             return of(organization, matchingAny());
         }
 
+
+    },
+    EMAIL{
+        @Override
+        public Example<Organization> existBy(List<String> values) {
+            var organization = new Organization();
+            organization.setEmail(values.get(0));
+            return of(organization, matchingAny().withIgnoreCase("email"));
+        }
+
+        @Override
+        public Example<Organization> findBy(String value) {
+            return null;
+        }
 
     };
 //    ORGANIZATION_ID_PROJECTS{

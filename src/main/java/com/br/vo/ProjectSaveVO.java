@@ -3,14 +3,14 @@ package com.br.vo;
 import com.br.entities.*;
 import com.br.validation.ValidOrganization;
 import com.br.validation.ValidProjectSaveVO;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,8 +41,6 @@ public class ProjectSaveVO implements Serializable {
     private Long organizationId;
 
     private List<Long> members;
-
-//    private List<@Valid ActivitySaveVO> activities;
 
     private Boolean isFinished;
 

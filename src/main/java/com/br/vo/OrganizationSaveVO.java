@@ -4,12 +4,12 @@ import com.br.entities.Organization;
 import com.br.entities.Project;
 import com.br.entities.User;
 import com.br.validation.ValidOrganizationSaveVO;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,9 +41,10 @@ public class OrganizationSaveVO implements Serializable {
 
     private List<UserSaveVO> userSaveVOList;
 
-    private String login;
 
-    private String password;
+    @NotBlank(message = "Email é obrigátorio")
+    @Pattern(regexp = "^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", message = "Email Invalido")
+    private String email;
 
     public Organization toEntity(){
 
@@ -51,8 +52,7 @@ public class OrganizationSaveVO implements Serializable {
                 .id(id)
                 .name(name)
                 .description(description)
-                .login(login)
-                .password(password)
+                .email(email)
                 .owners(nonNull(userSaveVOList) && !userSaveVOList.isEmpty() ? (List<User>) userSaveVOList.stream()
                         .map(UserSaveVO::toEntity).collect(Collectors.toSet()) : null)
                 .projects(nonNull(projectSaveVOList) && !projectSaveVOList.isEmpty() ? (List<Project>) projectSaveVOList.stream()

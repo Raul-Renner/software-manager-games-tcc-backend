@@ -6,15 +6,15 @@ import com.br.entities.User;
 import com.br.validation.ValidOrganization;
 import com.br.validation.ValidProject;
 import com.br.validation.ValidProjectUpdateVO;
+import jakarta.persistence.Id;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Id;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;

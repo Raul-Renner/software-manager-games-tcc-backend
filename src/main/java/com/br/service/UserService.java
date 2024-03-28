@@ -7,11 +7,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.br.fieldQueries.ProjectFieldQuery.ORGANIZATION_ID_PROJECT_ID;
 import static java.util.List.of;
@@ -19,16 +20,19 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.springframework.data.domain.Sort.Direction.ASC;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
 
     private final ProjectService projectService;
 
+    private final PasswordEncoder passwordEncoder;
+
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
     public void save(User user) {
+        var test = user.getAuthorities();
         try {
             if(nonNull(user.getProjects()) && !user.getProjects().isEmpty()){
                 user.getProjects().forEach(project -> {
@@ -38,7 +42,7 @@ public class UserService {
                     }
                 });
             }
-
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
           var userCopy = userRepository.save(user);
           if(nonNull(userCopy.getProjects()) && !userCopy.getProjects().isEmpty()){
               userCopy.getProjects().forEach(projectAux -> {
@@ -78,6 +82,7 @@ public class UserService {
             if(isNull(userUpdate)){
                 throw new RuntimeException("Erro ao ao editar usuário");
             }
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
             user.getUserInformation().setId(userUpdate.getUserInformation().getId());
             if(nonNull(user.getProjects()) && !user.getProjects().isEmpty()){
                 user.getProjects().forEach(projectAux -> {
@@ -118,4 +123,6 @@ public class UserService {
                 filter.getUserId(),
                 PageRequest.of(0, 9999, ASC, "id"));
     }
+
+
 }

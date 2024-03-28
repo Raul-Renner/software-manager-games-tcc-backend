@@ -7,17 +7,18 @@ import com.br.validation.ValidProject;
 
 import com.br.vo.ProjectSaveVO;
 import com.br.vo.ProjectUpdateVO;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-import javax.validation.Valid;
 
 import static org.springframework.data.domain.Sort.Direction.ASC;
-import static org.springframework.http.ResponseEntity.ok;
-import static reactor.core.publisher.Mono.empty;
 import static reactor.core.publisher.Mono.just;
 
 @Slf4j
@@ -30,39 +31,56 @@ public class ProjectController {
 
     @CrossOrigin
     @PostMapping
-    public Mono<?> save(@RequestBody @Valid ProjectSaveVO projectSaveVO){
-        projectService.save(projectSaveVO.toEntity());
-        return empty();
+    @PreAuthorize("hasRole('ROLE_ADMINISTRADOR')")
+    public ResponseEntity save(@RequestBody @Valid ProjectSaveVO projectSaveVO){
+        try {
+            projectService.save(projectSaveVO.toEntity());
+            return ResponseEntity.ok("Projeto criado com sucesso!");
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao cadastrar projeto.");
+        }
     }
 
     @CrossOrigin
     @PutMapping("{id}")
-    public Mono<?> update(@PathVariable @ValidProject Long id, @RequestBody @Valid ProjectUpdateVO projectUpdateVO){
-
+    @PreAuthorize("hasRole('ROLE_ADMINISTRADOR')")
+    public ResponseEntity update(@PathVariable @ValidProject Long id, @RequestBody @Valid ProjectUpdateVO projectUpdateVO){
+        try {
             if (!projectUpdateVO.getId().equals(id)) {
                 throw new RuntimeException("Os ids do projeto repassado nao conferem.");
             }
             Project project = projectUpdateVO.toEntity();
             project.setId(id);
             projectService.update(project);
-            return just(ok().build());
+            return ResponseEntity.ok("Update realizado com sucesso!");
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao editar dados do projeto.");
+        }
+
     }
 
     @CrossOrigin
     @DeleteMapping("{id}")
-    public Mono<?> delete(@PathVariable("id") Long id) {
+    @PreAuthorize("hasRole('ROLE_ADMINISTRADOR')")
+    public ResponseEntity delete(@PathVariable @Valid @ValidProject Long id) {
         try {
             projectService.processRemove(id);
-            return just(ok().build());
+            return ResponseEntity.ok("Projeto REMOVIDO com sucesso!");
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao deletar projeto.");
+            throw new RuntimeException("Erro ao DELETAR projeto.");
         }
     }
 
     @CrossOrigin
     @GetMapping("/findAllBy")
-    public Mono<?> findAllBy(ProjectFilterType filter) {
-        return just(projectService.findAll(filter, PageRequest.of(0, 9999, ASC, "id")));
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_GERENTE', 'ROLE_LIDER_TECNICO')")
+    public ResponseEntity findAllBy(ProjectFilterType filter) {
+        try {
+            return ResponseEntity.ok(projectService.findAll(filter, PageRequest.of(0, 9999, ASC, "id")));
+        } catch (Exception e){
+            return new ResponseEntity<>("Um erro inesperado ocorreu ao buscar projeto.",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 }

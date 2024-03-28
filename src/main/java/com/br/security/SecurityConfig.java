@@ -1,50 +1,61 @@
-//package com.br.security;
-//
-//import org.springframework.context.annotation.Bean;
-//import org.springframework.context.annotation.Configuration;
-//import org.springframework.http.HttpMethod;
-//import org.springframework.security.authentication.AuthenticationManager;
-//import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
-//import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
-//import org.springframework.security.config.web.server.ServerHttpSecurity;
-//import org.springframework.security.web.context.SecurityContextRepository;
-//import org.springframework.security.web.server.SecurityWebFilterChain;
-//
-//import static org.springframework.http.HttpStatus.FORBIDDEN;
-//import static org.springframework.http.HttpStatus.UNAUTHORIZED;
-//import static reactor.core.publisher.Mono.fromRunnable;
-//
-//@Configuration
-//@EnableWebFluxSecurity
-//@EnableReactiveMethodSecurity
-//public class SecurityConfig {
-//
-//    private AuthenticationManager authenticationManager;
-//
-//    private SecurityContextRepository securityContextRepository;
-//
-//    public SecurityConfig(AuthenticationManager authenticationManager, SecurityContextRepository securityContextRepository) {
-//        this.authenticationManager = authenticationManager;
-//        this.securityContextRepository = securityContextRepository;
-//    }
-//
-//    @Bean
-//    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity https) {
-//
-//        return https
-//                .exceptionHandling()
-//                .authenticationEntryPoint((swe, e) -> fromRunnable(() -> swe.getResponse().setStatusCode(UNAUTHORIZED)))
-//                .accessDeniedHandler((swe, e) -> fromRunnable(() -> swe.getResponse().setStatusCode(FORBIDDEN))).and()
-//                .csrf().disable()
-//                .formLogin().disable()
-//                .httpBasic().disable()
-//                .authenticationManager(authenticationManager)
-//                .securityContextRepository(securityContextRepository)
-//                .authorizeExchange()
-//                .pathMatchers(HttpMethod.OPTIONS).permitAll()
-//                .pathMatchers("/actuator/**").permitAll()
-//                .anyExchange().authenticated()
-//                .and()
-//                .build();
-//    }
-//}
+package com.br.security;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+
+@Configuration
+@EnableWebSecurity
+@RequiredArgsConstructor
+public class SecurityConfig {
+
+    private final SecurityFilter securityFilter;
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests( authorize -> authorize
+                        .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/api/org/project/**").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.OPTIONS, "/api/org/colaborator/**").hasAnyRole("ADMINISTRADOR", "LIDER_TECNICO", "GERENTE")
+                        .requestMatchers(HttpMethod.PUT, "/api/org/project/{id}").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.POST,"/api/org/project").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.GET, "/api/org/project/findAllBy").hasAnyRole("ADMINISTRADOR", "LIDER_TECNICO", "GERENTE")
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/org/colaborator").hasAnyRole("ADMINISTRADOR", "LIDER_TECNICO", "GERENTE")
+                        .requestMatchers(HttpMethod.POST, "/api/org").permitAll()
+                        .anyRequest().authenticated())
+
+                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+
+}

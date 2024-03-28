@@ -1,12 +1,12 @@
 package com.br.validation;
 
 import com.br.service.ProjectService;
-import com.br.vo.ProjectSaveVO;
 import com.br.vo.ProjectUpdateVO;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+
 
 import static com.br.fieldQueries.ProjectFieldQuery.ORGANIZATION_ID_PROJECT_ID;
 import static com.br.fieldQueries.ProjectFieldQuery.PROJECT_ID;

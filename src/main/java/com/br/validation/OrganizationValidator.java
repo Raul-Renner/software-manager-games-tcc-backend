@@ -17,7 +17,7 @@ public class OrganizationValidator implements ConstraintValidator<ValidOrganizat
     @Override
     public boolean isValid(Long value, ConstraintValidatorContext constraintValidatorContext) {
         if(isNull(value)){
-            return true;
+            return false;
         }
         return organizationService.existBy(ORGANIZATION_ID.existBy(singletonList(value.toString())));
     }

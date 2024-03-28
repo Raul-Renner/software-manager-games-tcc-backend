@@ -1,10 +1,10 @@
 package com.br.validation;
 
 import com.br.vo.ActivitySaveVO;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 
 @RequiredArgsConstructor
 public class ActivityVoValidator implements ConstraintValidator<ValidActivitySaveVO, ActivitySaveVO> {

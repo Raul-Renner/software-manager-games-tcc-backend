@@ -1,9 +1,9 @@
 package com.br.vo;
 
 import com.br.entities.ActivityDependent;
+import jakarta.persistence.Id;
 import lombok.*;
 
-import javax.persistence.*;
 
 import java.io.Serializable;
 

@@ -5,11 +5,11 @@ import com.br.entities.ActivityDependent;
 import com.br.entities.Board;
 import com.br.enums.*;
 import com.br.validation.ValidBoard;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import javax.persistence.Id;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,8 +58,6 @@ public class ActivitySaveVO {
 
     private List<Long> activityDependentIds;
 
-    private String colorCard;
-
     private UserSaveVO userSaveVO;
 
     @ValidBoard
@@ -82,7 +80,6 @@ public class ActivitySaveVO {
                         new ArrayList<>())
                 .tagsEnum(nonNull(tagsEnum) ? tagsEnum : INDEPENDENT)
                 .statusPriorityEnum(nonNull(statusPriorityEnum) ? statusPriorityEnum : LOW)
-                .colorCard(nonNull(colorCard)  ? colorCard : "#FFFFFF")
                 .user(nonNull(userSaveVO) ? userSaveVO.toEntity() : null)
                 .board(Board.builder().id(boardId).build())
                 .build();

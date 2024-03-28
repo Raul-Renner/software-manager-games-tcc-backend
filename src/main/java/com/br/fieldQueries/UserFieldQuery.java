@@ -1,13 +1,9 @@
 package com.br.fieldQueries;
 
-
-
 import com.br.entities.Organization;
-import com.br.entities.Project;
 import com.br.entities.User;
 import com.br.entities.UserInformation;
 import org.springframework.data.domain.Example;
-import org.springframework.http.HttpStatus;
 
 import java.util.List;
 

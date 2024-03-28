@@ -1,19 +1,13 @@
 package com.br.validation;
 
 import com.br.repository.UserRepository;
-import com.br.service.UserService;
+
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import java.util.Collections;
-
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 
 
-@Slf4j
 @RequiredArgsConstructor
 public class UserValidator implements ConstraintValidator<ValidUser, Long> {
 
@@ -26,9 +20,15 @@ public class UserValidator implements ConstraintValidator<ValidUser, Long> {
 
     @Override
     public boolean isValid(Long value, ConstraintValidatorContext context) {
+        context.disableDefaultConstraintViolation();
+        var isValid = true;
         if(isNull(value)) {
-            return true;
+            isValid = false;
         }
-        return userRepository.existsById(value);
+        if(!userRepository.existsById(value)){
+            context.buildConstraintViolationWithTemplate("Usuário não encontrado.").addConstraintViolation();
+            isValid = false;
+        }
+        return isValid;
     }
 }

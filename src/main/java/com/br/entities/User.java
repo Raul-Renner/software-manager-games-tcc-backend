@@ -3,28 +3,31 @@ package com.br.entities;
 
 import com.br.enums.ProfileEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.*;
 
-import javax.persistence.*;
-import java.io.Serializable;
+import jakarta.persistence.*;
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+
+import java.util.Collection;
 import java.util.List;
 
-import static javax.persistence.CascadeType.*;
-import static javax.persistence.EnumType.STRING;
-import static javax.persistence.FetchType.LAZY;
+import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.CascadeType.REMOVE;
+import static jakarta.persistence.EnumType.STRING;
+import static jakarta.persistence.FetchType.LAZY;
+
 
 @Data
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @ToString(exclude = {"projects"})
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "user_")
-public class User implements Serializable {
+public class User implements UserDetails {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -37,9 +40,6 @@ public class User implements Serializable {
 
     @Column(name = "password")
     private String password;
-
-    @Column(name = "token")
-    private String token;
 
     @OneToOne(cascade = ALL)
     @JoinColumn(name = "id_userinformation")
@@ -58,4 +58,34 @@ public class User implements Serializable {
     @Column(name = "tp_profile")
     private ProfileEnum profile;
 
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + profile.name()));
+    }
+
+    @Override
+    public String getUsername() {
+        return login;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }

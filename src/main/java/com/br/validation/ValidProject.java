@@ -15,7 +15,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({ElementType.METHOD, ElementType.FIELD, ElementType.CONSTRUCTOR, ElementType.PARAMETER, ElementType.TYPE_USE})
 @Constraint(validatedBy = ProjectValidator.class)
 public @interface ValidProject {
-    String message() default "Projet é inválida.";
+    String message() default "Projeto é inválida.";
 
     Class<?>[] groups() default {};
 

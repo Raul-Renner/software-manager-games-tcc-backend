@@ -1,17 +1,14 @@
 package com.br.controller;
 
 import com.br.service.ProfileService;
-import com.br.type.ProjectFilterType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
-import static org.springframework.data.domain.Sort.Direction.ASC;
 import static reactor.core.publisher.Mono.just;
 
 @Slf4j

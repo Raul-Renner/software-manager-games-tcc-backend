@@ -1,12 +1,11 @@
 package com.br.validation;
 
 import com.br.service.OrganizationService;
-import com.br.service.ProjectService;
 import com.br.vo.ProjectSaveVO;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 
 import static com.br.fieldQueries.OrganizationFieldQuery.ORGANIZATION_ID;
 import static java.util.Arrays.asList;
@@ -14,8 +13,6 @@ import static java.util.Arrays.asList;
 
 @RequiredArgsConstructor
 public class ProjectSaveVoValidation implements ConstraintValidator<ValidProjectSaveVO, ProjectSaveVO> {
-
-    private final ProjectService projectService;
 
     private final OrganizationService organizationService;
     @Override

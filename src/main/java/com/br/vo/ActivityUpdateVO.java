@@ -4,14 +4,14 @@ import com.br.entities.Activity;
 import com.br.entities.Board;
 import com.br.enums.*;
 import com.br.validation.ValidBoard;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Id;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -79,7 +79,6 @@ public class ActivityUpdateVO {
                 .activityDependentList(nonNull(activityDependentIds) ? activityDependentIds.stream().map(ActivityDependentVO::toEntity).collect(Collectors.toList()) : null)
                 .tagsEnum(nonNull(tagsEnum) ? tagsEnum : INDEPENDENT)
                 .statusPriorityEnum(nonNull(statusPriorityEnum) ? statusPriorityEnum : LOW)
-                .colorCard(nonNull(colorCard)  ? colorCard : "#FFFFFF")
                 .user(nonNull(userSaveVO) ? userSaveVO.toEntity() : null)
                 .board(Board.builder().id(boardId).build())
                 .usedTime(isNull(usedTime) ? "-" : usedTime)

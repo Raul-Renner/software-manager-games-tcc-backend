@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -29,6 +30,7 @@ public class ActivityController {
 
     @CrossOrigin
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'GERENTE', 'LIDER_TECNICO')")
     public Mono<?> save(@RequestBody ActivitySaveVO activityVO){
         activityService.save(activityVO.toEntity());
         return empty();
@@ -36,6 +38,7 @@ public class ActivityController {
 
     @CrossOrigin
     @DeleteMapping("{id}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'GERENTE', 'LIDER_TECNICO')")
     public Mono<?> delete(@PathVariable("id") Long id) {
         try {
             activityService.processRemove(id);

@@ -3,13 +3,13 @@ package com.br.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.persistence.*;
 import lombok.*;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
-import static javax.persistence.CascadeType.ALL;
+import static jakarta.persistence.CascadeType.*;
 
 
 @Data
@@ -45,13 +45,10 @@ public class Project implements Serializable {
             inverseJoinColumns = {@JoinColumn(name = "id_user", nullable = false)})
     private List<User> members;
 
-//    @OneToMany(mappedBy = "project")
-//    private List<Activity> activities;
-
     @Column(name = "is_finished")
     private Boolean isFinished;
 
-    @OneToOne(cascade = ALL)
+    @OneToOne(cascade = REMOVE)
     @JoinColumn(name = "id_board")
     private Board board;
 }

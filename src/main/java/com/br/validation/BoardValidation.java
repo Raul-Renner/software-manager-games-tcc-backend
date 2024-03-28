@@ -6,6 +6,7 @@ import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;
 
 import static com.br.fieldQueries.BoardFieldQuery.ID;
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.Objects.isNull;
 
@@ -21,8 +22,15 @@ public class BoardValidation implements ConstraintValidator<ValidBoard, Long> {
 
     @Override
     public boolean isValid(Long value, ConstraintValidatorContext context) {
-        if(isNull(value)){
-            return true;
+        context.disableDefaultConstraintViolation();
+        var isValid = true;
+        if(isNull(value)) {
+            isValid = false;
         }
-        return boardService.existBy(ID.existBy(singletonList(value.toString())));    }
+        if(!boardService.existBy(ID.existBy(asList(value.toString())))){
+            context.buildConstraintViolationWithTemplate("Board não encontrado.").addConstraintViolation();
+            isValid = false;
+        }
+        return isValid;
+    }
 }

@@ -1,19 +1,21 @@
 package com.br.vo;
 
+import com.br.entities.ActivityDependent;
 import com.br.entities.Organization;
 import com.br.entities.Project;
 import com.br.entities.User;
 import com.br.validation.ValidOrganization;
 import com.br.validation.ValidOrganizationUpdateVO;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,14 +43,19 @@ public class OrganizationUpdateVO implements Serializable {
     @NotBlank(message = "A descrição da organização é obrigatório.")
     private String description;
 
-    private List<ProjectSaveVO> projectSaveVOList;
+//    private List<ProjectSaveVO> projectSaveVOList;
 
-    private List<UserSaveVO> userSaveVOList;
+    private List<Long> projectSaveVOList;
 
-    private String login;
 
-    private String password;
+//    private List<UserSaveVO> userSaveVOList;
 
+    private List<Long> userSaveVOList;
+
+
+    @NotBlank(message = "Email é obrigátorio")
+    @Pattern(regexp = "^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", message = "Email Invalido")
+    private String email;
 
     public Organization toEntity(){
 
@@ -56,12 +63,15 @@ public class OrganizationUpdateVO implements Serializable {
                 .id(id)
                 .name(name)
                 .description(description)
-                .login(login)
-                .password(password)
-                .owners(nonNull(userSaveVOList) && !userSaveVOList.isEmpty() ? (List<User>) userSaveVOList.stream()
-                        .map(UserSaveVO::toEntity).collect(Collectors.toSet()) : null)
-                .projects(nonNull(projectSaveVOList) && !projectSaveVOList.isEmpty() ? (List<Project>) projectSaveVOList.stream()
-                        .map(ProjectSaveVO::toEntity).collect(Collectors.toSet()) : null).build();
+                .email(email)
+                .owners(nonNull(userSaveVOList) && !userSaveVOList.isEmpty() ?
+                        userSaveVOList.stream().map(id -> User.builder()
+                                        .id(id).build())
+                                .collect(Collectors.toList()) : new ArrayList<>())
+                .projects(nonNull(projectSaveVOList) && !projectSaveVOList.isEmpty() ?
+                        projectSaveVOList.stream().map(id -> Project.builder()
+                                .id(id).build())
+                                .collect(Collectors.toList()) : new ArrayList<>()).build();
     }
 
 }

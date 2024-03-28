@@ -1,20 +1,18 @@
 package com.br.service;
 
-import com.br.entities.Activity;
-import com.br.entities.Organization;
-import com.br.entities.Project;
+import com.br.entities.*;
 import com.br.repository.OrganizationRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Example;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
+import static com.br.enums.ProfileEnum.ADMINISTRADOR;
 import static io.vavr.control.Option.ofOptional;
-import static java.lang.String.format;
-import static java.util.Objects.nonNull;
+
 
 @Slf4j
 @Service
@@ -23,10 +21,26 @@ public class OrganizationService {
 
     private final OrganizationRepository organizationRepository;
 
+    private final UserService userService;
+
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
     public void save(Organization organization) {
         try {
-            organizationRepository.save(organization);
+           var organizationCopy = organizationRepository.save(organization);
+
+            userService.save(User.builder()
+                            .userInformation(UserInformation.builder()
+                                    .email(organizationCopy.getEmail())
+                                    .name(organizationCopy.getName())
+                                    .username(organizationCopy.getName())
+                                    .build())
+                            .login("username011" + organizationCopy.getId())
+                            .password("password011" + organizationCopy.getId())
+                            .organization(organizationCopy)
+                            .profile(ADMINISTRADOR)
+
+                    .build());
+
         }catch (Exception e){
             throw new RuntimeException("Erro ao criar sua organização" );
 
@@ -36,7 +50,16 @@ public class OrganizationService {
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
     public void update(Organization organization) {
         try {
+            var organizationOld = findOrganizationById(organization.getId());
+
+            organization.getProjects().clear();
+            organization.getOwners().clear();
+
+            organization.setOwners(organizationOld.getOwners());
+            organization.setProjects(organization.getProjects());
+
             organizationRepository.save(organization);
+
         }catch (Exception e){
             throw new RuntimeException("Erro ao atualizar dados da organização");
         }

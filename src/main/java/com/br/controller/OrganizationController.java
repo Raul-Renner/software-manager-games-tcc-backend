@@ -6,12 +6,14 @@ import com.br.service.OrganizationService;
 import com.br.validation.ValidOrganization;
 import com.br.vo.OrganizationSaveVO;
 import com.br.vo.OrganizationUpdateVO;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
-import javax.validation.Valid;
-import static org.springframework.http.ResponseEntity.ok;
 import static reactor.core.publisher.Mono.*;
 import static com.br.fieldQueries.OrganizationFieldQuery.valueOf;
 @Slf4j
@@ -24,26 +26,41 @@ public class OrganizationController {
 
     @CrossOrigin
     @PostMapping
-    public Mono<?> save(@RequestBody OrganizationSaveVO organizationSaveVO){
-        organizationService.save(organizationSaveVO.toEntity());
-        return empty();
+    public ResponseEntity save(@RequestBody @Valid OrganizationSaveVO organizationSaveVO){
+        try {
+            organizationService.save(organizationSaveVO.toEntity());
+
+            return ResponseEntity.ok("Organization created with success!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body( "Error ao tentar criar organização");
+        }
     }
 
     @CrossOrigin
     @PutMapping("{id}")
-    public Mono<?> update(@PathVariable @ValidOrganization Long id, @Valid @RequestBody OrganizationUpdateVO organizationUpdateVO){
+    @PreAuthorize("hasRole('ROLE_ADMINISTRADOR')")
+    public ResponseEntity update(@PathVariable @ValidOrganization Long id, @Valid @RequestBody OrganizationUpdateVO organizationUpdateVO){
+            try{
+                if (!organizationUpdateVO.getId().equals(id)) {
+                    throw new RuntimeException("Os ids da organizacao nao conferem.");
+                }
+                Organization organization = organizationUpdateVO.toEntity();
+                organization.setId(id);
+                organizationService.update(organization);
 
-            if (!organizationUpdateVO.getId().equals(id)) {
-                throw new RuntimeException("Os ids da organizacao nao conferem.");
+                return ResponseEntity.ok("Atualização nos dados realizados com sucesso!");
+            } catch (Exception e){
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body( "Error ao tentar atualizar informações da organização");
             }
-            Organization organization = organizationUpdateVO.toEntity();
-            organization.setId(id);
-            organizationService.update(organization);
-            return just(ok().build());
+
+
     }
 
     @CrossOrigin
     @GetMapping("/find-by")
+    @PreAuthorize("hasRole('ROLE_ADMINISTRADOR')")
     public Mono<?> findBy(@RequestParam String field, @RequestParam String value) {
         log.info("Searching organization by field: {} and value {}.", field, value);
         return justOrEmpty(organizationService.findBy(valueOf(field).findBy(value)));

@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -58,31 +57,31 @@ public class ColumnBoardService {
         save(ColumnBoard.builder()
                         .board(columnBoard.getBoard())
                         .name("ToDo")
-                        .sectorActivity("TO_DO")
+                        .description("TO_DO")
                         .build());
 
         save(ColumnBoard.builder()
                 .board(columnBoard.getBoard())
                 .name("Preparação")
-                .sectorActivity("PREPARATION")
+                .description("PREPARATION")
                 .build());
 
         save(ColumnBoard.builder()
                 .board(columnBoard.getBoard())
                 .name("Integração")
-                .sectorActivity("INTEGRATION")
+                .description("INTEGRATION")
                 .build());
 
         save(ColumnBoard.builder()
                 .board(columnBoard.getBoard())
                 .name("Teste")
-                .sectorActivity("TEST")
+                .description("TEST")
                 .build());
 
         save(ColumnBoard.builder()
                 .board(columnBoard.getBoard())
                 .name("Feito")
-                .sectorActivity("DONE")
+                .description("DONE")
                 .build());
     }
 

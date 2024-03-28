@@ -1,13 +1,14 @@
 package com.br.validation;
 
+import jakarta.validation.ConstraintViolation;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
-import javax.validation.ConstraintViolation;
 import java.io.Serializable;
+
 
 @Getter
 @EqualsAndHashCode
