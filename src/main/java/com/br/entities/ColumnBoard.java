@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @Entity
@@ -30,12 +31,14 @@ public class ColumnBoard implements Serializable {
     private String name;
 
     @Column(name="sector_description")
-    private String description;
+    private String sectorActivity;
 
     @ManyToOne
     @JsonIgnore
-    @JoinColumn(name = "id_board")
-    private Board board;
+    @JoinColumn(name = "id_project")
+    private Project project;
 
+    @OneToMany(mappedBy = "columnBoard", cascade = CascadeType.REMOVE)
+    private List<Activity> activities;
 
 }

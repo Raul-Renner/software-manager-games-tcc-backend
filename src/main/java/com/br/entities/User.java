@@ -17,6 +17,7 @@ import java.util.List;
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.EnumType.STRING;
+import static jakarta.persistence.FetchType.EAGER;
 import static jakarta.persistence.FetchType.LAZY;
 
 
@@ -46,17 +47,18 @@ public class User implements UserDetails {
     private UserInformation userInformation;
 
     @ManyToOne
-    @JsonIgnore
     @JoinColumn(name = "id_organization")
     private Organization organization;
 
-    @JsonIgnore
     @ManyToMany(mappedBy = "members", cascade = REMOVE, fetch = LAZY)
     private List<Project> projects;
 
     @Enumerated(STRING)
     @Column(name = "tp_profile")
     private ProfileEnum profile;
+
+    @OneToMany(mappedBy = "user", cascade = REMOVE, fetch = EAGER)
+    private List<Activity> activities;
 
 
     @Override

@@ -1,9 +1,11 @@
 package com.br.vo;
 
 import com.br.entities.Activity;
-import com.br.entities.Board;
+import com.br.entities.ActivityDependent;
+import com.br.entities.ColumnBoard;
 import com.br.enums.*;
-import com.br.validation.ValidBoard;
+import com.br.validation.ValidActivity;
+import com.br.validation.ValidColumnBoard;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -12,6 +14,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,6 +34,7 @@ public class ActivityUpdateVO {
     private static final long serialVersionUID = 1L;
 
     @Id
+    @ValidActivity
     private Long id;
 
     private String identifier;
@@ -47,9 +51,9 @@ public class ActivityUpdateVO {
 
     private String usedTime;
 
-    private SectorActivityEnum sectorActivityEnum;
+    private String sectorActivity;
 
-    private StatusActivityEnum statusActivityEnum;
+    private Boolean isFinished;
 
     private StatusPriorityEnum statusPriorityEnum;
 
@@ -57,14 +61,12 @@ public class ActivityUpdateVO {
 
     private Boolean isBlock;
 
-    private List<ActivityDependentVO> activityDependentIds;
-
-    private String colorCard;
-
-    @ValidBoard
-    private Long boardId;
+    private List<Long> activityDependentIds;
 
     private UserSaveVO userSaveVO;
+
+    @ValidColumnBoard
+    private Long columnBoardId;
 
     public Activity toEntity(){
         var activity = Activity.builder()
@@ -73,15 +75,19 @@ public class ActivityUpdateVO {
                 .identifier(identifier)
                 .description(description)
                 .estimatedTime(isNull(estimatedTime) ? "-" : estimatedTime)
-                .isBlock(isBlock)
-                .sectorActivityEnum(nonNull(sectorActivityEnum) ? sectorActivityEnum : TO_DO)
-                .statusActivityEnum(nonNull(statusActivityEnum) ? statusActivityEnum : StatusActivityEnum.TO_DO)
-                .activityDependentList(nonNull(activityDependentIds) ? activityDependentIds.stream().map(ActivityDependentVO::toEntity).collect(Collectors.toList()) : null)
+                .isBlock(nonNull(isBlock) ? isBlock : false)
+                .sectorActivity(nonNull(sectorActivity) ? sectorActivity : "TODO")
+                .isFinished(nonNull(isFinished) ? isFinished : false)
+                .activityDependentList(nonNull(activityDependentIds) ?
+                        activityDependentIds.stream().map(id -> ActivityDependent.builder()
+                                        .activitySource(id).build())
+                                .collect(Collectors.toList()) :
+                        new ArrayList<>())
                 .tagsEnum(nonNull(tagsEnum) ? tagsEnum : INDEPENDENT)
                 .statusPriorityEnum(nonNull(statusPriorityEnum) ? statusPriorityEnum : LOW)
                 .user(nonNull(userSaveVO) ? userSaveVO.toEntity() : null)
-                .board(Board.builder().id(boardId).build())
                 .usedTime(isNull(usedTime) ? "-" : usedTime)
+                .columnBoard(nonNull(columnBoardId) ? ColumnBoard.builder().id(columnBoardId).build(): null)
                 .build();
 
         return activity;

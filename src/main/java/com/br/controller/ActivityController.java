@@ -1,13 +1,17 @@
 package com.br.controller;
 
 import com.br.entities.Activity;
+import com.br.validation.ValidActivity;
 import com.br.vo.ActivitySaveVO;
 import com.br.service.ActivityService;
 import com.br.vo.ActivityUpdateVO;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -30,56 +34,67 @@ public class ActivityController {
 
     @CrossOrigin
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'GERENTE', 'LIDER_TECNICO')")
-    public Mono<?> save(@RequestBody ActivitySaveVO activityVO){
-        activityService.save(activityVO.toEntity());
-        return empty();
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_GERENTE', 'ROLE_LIDER_TECNICO')")
+    public ResponseEntity save(@RequestBody @Valid ActivitySaveVO activityVO){
+        try {
+            activityService.save(activityVO.toEntity());
+            return ResponseEntity.ok("Atividade cadastrada com sucesso!");
+        } catch (Exception e ){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body( "Error ao tentar salvar atividade");
+        }
     }
 
     @CrossOrigin
     @DeleteMapping("{id}")
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'GERENTE', 'LIDER_TECNICO')")
-    public Mono<?> delete(@PathVariable("id") Long id) {
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_GERENTE', 'ROLE_LIDER_TECNICO')")
+    public ResponseEntity delete(@PathVariable("id") @ValidActivity Long id) {
         try {
             activityService.processRemove(id);
-            return just(ok().build());
+            return ResponseEntity.ok("Atividade deleta com sucesso!");
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao deletar atividade.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body( "Error ao tentar remover atividade");
         }
     }
 
     @CrossOrigin
     @PutMapping("{id}")
-    public Mono<?> update(@PathVariable("id") Long id, @RequestBody ActivityUpdateVO activitySaveVO){
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_GERENTE', 'ROLE_LIDER_TECNICO')")
+    public ResponseEntity update(@PathVariable("id") @ValidActivity Long id, @RequestBody @Valid ActivityUpdateVO activitySaveVO){
         try {
             Activity activity = activitySaveVO.toEntity();
             activity.setId(id);
             activityService.update(activity);
-            return just(ok().build());
+            return ResponseEntity.ok("Atividade atualizada com sucesso!");
         }catch (Exception e){
-            throw new RuntimeException("Ocorreu um erro ao editar atividade.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body( "Error ao tentar atualizar informações da atividade");
         }
     }
 
     @CrossOrigin
     @PutMapping("/sector-card/{id}")
-    public Mono<?> updateSectorCard(@PathVariable("id") Long id, @RequestBody ActivityUpdateVO activitySaveVO){
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_GERENTE', 'ROLE_LIDER_TECNICO', 'ROLE_DESENVOLVEDOR')")
+    public ResponseEntity updateSectorCard(@PathVariable("id") Long id, @RequestBody ActivityUpdateVO activitySaveVO){
         try {
             Activity activity = activitySaveVO.toEntity();
             activity.setId(id);
             activityService.updateSectorCard(activity);
-            return just(ok().build());
+            return ResponseEntity.ok().build();
         }catch (Exception e){
-            throw new RuntimeException("Ocorreu um erro ao editar atividade.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body( "Error ao tentar atualizar da atividade");
         }
     }
 
 
     @CrossOrigin
     @GetMapping
-    public Mono<?> findAll(){
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_GERENTE', 'ROLE_LIDER_TECNICO', 'ROLE_DESENVOLVEDOR')")
+    public ResponseEntity findAll(){
         try {
-            return just(activityService.findAll(PageRequest.of(0, 9999, ASC, "id")));
+            return ResponseEntity.ok(activityService.findAll(PageRequest.of(0, 9999, ASC, "id")));
         }catch (Exception e){
             throw new RuntimeException("Erro ao listar atividades.");
         }

@@ -42,7 +42,7 @@ public class UserSaveVO implements Serializable {
 
     @NotNull(message = "A senha é obrigatório.")
     @NotBlank(message = "A senha é obrigatório.")
-    @Size(min = 8, max = 20, message = "A sebga deve conter entre 8 e 20 caracteres.")
+    @Size(min = 8, max = 20, message = "A senha deve conter entre 8 e 20 caracteres.")
     private String password;
 
     @NotNull(message = "O nome é obrigatório.")

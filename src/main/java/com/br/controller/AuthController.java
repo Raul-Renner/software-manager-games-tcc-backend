@@ -1,8 +1,9 @@
 package com.br.controller;
 
-import com.br.dto.AuthenticatedResponseDTO;
+import com.br.dto.AuthenticatedResponse;
 import com.br.dto.AuthRequest;
 import com.br.entities.User;
+import com.br.service.AuthService;
 import com.br.service.TokenService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,21 +24,21 @@ import java.util.NoSuchElementException;
 @RequestMapping("/api/auth")
 public class AuthController {
 
+    private final AuthService authService;
+
     private final AuthenticationManager authenticationManager;
 
     private final TokenService tokenService;
 
-
     @CrossOrigin
-    @PostMapping("/login")
+    @PostMapping(value = "/login", consumes =  "application/json")
     public ResponseEntity auth(@RequestBody @Valid AuthRequest authRequest){
         try {
             var usernamePassword = new UsernamePasswordAuthenticationToken(authRequest.login(), authRequest.password());
             var auth = this.authenticationManager.authenticate(usernamePassword);
-
             var token = tokenService.generateToken((User) auth.getPrincipal());
 
-            return ResponseEntity.ok(new AuthenticatedResponseDTO(token));
+            return ResponseEntity.ok(authService.authenticationUser((User) auth.getPrincipal(), token));
         } catch (AuthenticationException e){
             throw new BadCredentialsException(e.getMessage() + " Usuário ou senha inválidos");
         } catch (NoSuchElementException e) {

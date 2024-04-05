@@ -1,5 +1,6 @@
 package com.br.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,6 +10,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import static jakarta.persistence.FetchType.EAGER;
+import static jakarta.persistence.FetchType.LAZY;
 
 
 @Data
@@ -32,9 +34,10 @@ public class Organization implements Serializable {
     private String description;
 
     @OneToMany(mappedBy = "organization",fetch = EAGER)
+    @JsonIgnore
     private List<User> owners;
 
-    @OneToMany(mappedBy = "organization",fetch = EAGER)
+    @OneToMany(mappedBy = "organization",fetch = LAZY)
     private List<Project> projects;
 
 

@@ -2,11 +2,15 @@ package com.br.service;
 
 import com.br.entities.Activity;
 import com.br.entities.ActivityDependent;
+import com.br.enums.ProfileEnum;
 import com.br.enums.StatusPriorityEnum;
 import com.br.repository.ActivityRepository;
 import com.br.type.ActivityDependentFilterType;
+import com.br.type.ActivityFilterNoInType;
+import com.br.type.ActivityFilterType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,10 +20,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.br.enums.SectorActivityEnum.DONE;
-import static com.br.enums.SectorActivityEnum.PRIORITY;
 import static com.br.enums.TagsEnum.DEPENDENT;
 import static com.br.enums.TagsEnum.INDEPENDENT;
+import static com.br.fieldQueries.ActivityDependentFieldQuery.ID_ACTIVITY_BRANCH;
+import static java.util.Arrays.asList;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.springframework.data.domain.Sort.Direction.ASC;
@@ -34,38 +38,27 @@ public class ActivityService {
     private final ActivityDependentService activityDependentService;
 
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
-    public void save(Activity activity) {
+    public Activity save(Activity activity) {
         try {
             if(nonNull(activity.getTagsEnum())){
                 switch (activity.getTagsEnum()){
                     case URGENT:
-                        activity.setColorCard("#DB6262");
                         activity.setStatusPriorityEnum(StatusPriorityEnum.HIGH);
-                        activity.setSectorActivityEnum(PRIORITY);
+                        activity.setSectorActivity("PRIORITY");
                         break;
                     case DEPENDENT:
                         if(nonNull(activity.getActivityDependentList()) && !activity.getActivityDependentList().isEmpty()){
-                            activity.setColorCard("#FFA500");
                         }else{
-                            activity.setColorCard("#FFFFFF");
                             activity.setTagsEnum(INDEPENDENT);
                         }
-                        break;
-                    case INDEPENDENT:
-                        activity.setColorCard("#FFFFFF");
-                        break;
-                    case IMPROVEMENT:
-                        activity.setColorCard("#2F8BF5");
                         break;
                 }
             }
             if(nonNull(activity.getActivityDependentList()) && !activity.getActivityDependentList().isEmpty()){
-                if(activity.getSectorActivityEnum().equals(DONE)){
-                    activity.setColorCard("#107351");
+                if(activity.getSectorActivity().equals("DONE")){
                     activity.setIsBlock(false);
 
                 }else{
-                    activity.setColorCard("#FFA500");
                     activity.setIsBlock(true);
                 }
                 activity.setTagsEnum(DEPENDENT);
@@ -82,18 +75,13 @@ public class ActivityService {
 
                 if(activityRepository.allDependenciesCompleted(activityCopy.getId())){
                     activityCopy.setIsBlock(false);
-                    activityCopy.setColorCard("#FFFFFF");
                     activityCopy.setTagsEnum(INDEPENDENT);
-                    activityRepository.save(activityCopy);
+                   return activityRepository.save(activityCopy);
                 }
             }else{
-                if(activity.getSectorActivityEnum().equals(DONE)){
-                    activity.setColorCard("#107351");
-                }
                 activity.setIsBlock(false);
-                activityRepository.save(activity);
             }
-
+            return activityRepository.save(activity);
         } catch (Exception e) {
             throw new RuntimeException("Erro ao processo de salvamento da atividade" );
         }
@@ -107,22 +95,18 @@ public class ActivityService {
                     case URGENT:
                         if(nonNull(activity.getActivityDependentList()) &&
                                 !activity.getActivityDependentList().isEmpty()){
-                            activity.setColorCard("#FFA500");
                             activity.setTagsEnum(DEPENDENT);
                         }else{
-                            activity.setColorCard("#DB6262");
                             activity.setStatusPriorityEnum(StatusPriorityEnum.HIGH);
                         }
                         break;
                     case DEPENDENT:
                         if(nonNull(activity.getActivityDependentList()) &&
                                 !activity.getActivityDependentList().isEmpty()){
-                            activity.setColorCard("#FFA500");
 
 
                         }else{
                             var activiyOld = findById(activity.getId());
-                            activity.setColorCard(activiyOld.getColorCard());
                             activity.setTagsEnum(activiyOld.getTagsEnum());
                         }
                         break;
@@ -131,22 +115,14 @@ public class ActivityService {
                                 !activity.getActivityDependentList().isEmpty()){
 
                             if(!activityRepository.allDependenciesCompleted(activity.getId())){
-                                activity.setColorCard("#FFA500");
                                 activity.setTagsEnum(DEPENDENT);
-                            }else{
-                                activity.setColorCard("#FFFFFF");
                             }
-                        }else{
-                            activity.setColorCard("#FFFFFF");
                         }
                         break;
                     case IMPROVEMENT:
                         if(nonNull(activity.getActivityDependentList()) &&
                                 !activity.getActivityDependentList().isEmpty()){
-                            activity.setColorCard("#FFA500");
                             activity.setTagsEnum(DEPENDENT);
-                        }else{
-                            activity.setColorCard("#2F8BF5");
                         }
                         break;
                 }
@@ -188,11 +164,9 @@ public class ActivityService {
                         });
                         if(!activityRepository.allDependenciesCompleted(activity.getId())){
                             activity.setIsBlock(true);
-                            activity.setColorCard("#FFA500");
                             activity.setTagsEnum(DEPENDENT);
                         }else{
                             if(activity.getTagsEnum().equals(DEPENDENT)){
-                                    activity.setColorCard("#FFFFFF");
                                     activity.setTagsEnum(INDEPENDENT);
                                     activity.setIsBlock(false);
                             }
@@ -201,7 +175,6 @@ public class ActivityService {
                                 .builder().activityBranch(activity.getId()).build(), PageRequest.of(0, 9999, ASC, "id"));
                         if(isNull(activities1) || activities1.isEmpty()){
                             activity.setIsBlock(false);
-                            activity.setColorCard("#2F8BF5");
 
                         }
                     }else{
@@ -218,29 +191,30 @@ public class ActivityService {
                                     .build());
                         }
                         activity.setIsBlock(true);
-                        activity.setColorCard("#FFA500");
                         activity.setTagsEnum(DEPENDENT);
                     }
 
                 }else{
                     activities.forEach(activityDelete -> activityDependentService.processRemove(activityDelete.getId()));
                     activity.setIsBlock(false);
-                    activity.setColorCard("#FFFFFF");
                     activity.setTagsEnum(INDEPENDENT);
                 }
 
             }else{
                 if(nonNull(activity.getActivityDependentList()) && !activity.getActivityDependentList().isEmpty()){
-                    if(!activityRepository.allDependenciesCompleted(activity.getId())){
+
+                    if(!activityDependentService.existBy(ID_ACTIVITY_BRANCH.existBy(asList(activity.getId().toString())))){
                         activity.setIsBlock(true);
-                        activity.setColorCard("#FFA500");
                         activity.setTagsEnum(DEPENDENT);
                     }else{
-                        //if(activity.getTagsEnum().equals(DEPENDENT)){
-                            activity.setColorCard("#FFFFFF");
+                        if(!activityRepository.allDependenciesCompleted(activity.getId())){
+                            activity.setIsBlock(true);
+                            activity.setTagsEnum(DEPENDENT);
+                        }else{
                             activity.setTagsEnum(INDEPENDENT);
                             activity.setIsBlock(false);
-                    //    }
+
+                        }
                     }
 
                     for(ActivityDependent activityDependent : activity.getActivityDependentList()){
@@ -255,8 +229,7 @@ public class ActivityService {
 
                 }
             }
-            if(activity.getSectorActivityEnum().equals(DONE)){
-                activity.setColorCard("#107351");
+            if(activity.getSectorActivity().equals("DONE")){
                 activityRepository.save(activity);
                 checkDependents(activity.getId());
             }else{
@@ -313,8 +286,7 @@ public class ActivityService {
 
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
     public void updateSectorCard(Activity activity) {
-        if(activity.getSectorActivityEnum().equals(DONE)){
-            activity.setColorCard("#107351");
+        if(activity.getSectorActivity().equals("DONE")){
             activityRepository.save(activity);
             checkDependents(activity.getId());
         }else{
@@ -324,20 +296,16 @@ public class ActivityService {
                     case URGENT:
                         if(nonNull(activity.getActivityDependentList()) &&
                                 !activity.getActivityDependentList().isEmpty()){
-                            activity.setColorCard("#FFA500");
                             activity.setTagsEnum(DEPENDENT);
                         }else{
-                            activity.setColorCard("#DB6262");
                             activity.setStatusPriorityEnum(StatusPriorityEnum.HIGH);
                         }
                         break;
                     case DEPENDENT:
                         if(nonNull(activity.getActivityDependentList()) &&
                                 !activity.getActivityDependentList().isEmpty()){
-                            activity.setColorCard("#FFA500");
                         }else{
                             var activiyOld = findById(activity.getId());
-                            activity.setColorCard(activiyOld.getColorCard());
                             activity.setTagsEnum(activiyOld.getTagsEnum());
                         }
                         break;
@@ -345,36 +313,28 @@ public class ActivityService {
                         if(nonNull(activity.getActivityDependentList()) &&
                                 !activity.getActivityDependentList().isEmpty()){
                             if(!activityRepository.allDependenciesCompleted(activity.getId())){
-                                activity.setColorCard("#FFA500");
                                 activity.setTagsEnum(DEPENDENT);
                                 activity.setIsBlock(true);
-                            }else{
-                                activity.setColorCard("#FFFFFF");
                             }
-                        }else{
-                            activity.setColorCard("#FFFFFF");
                         }
                         break;
                     case IMPROVEMENT:
                         if(nonNull(activity.getActivityDependentList()) &&
                                 !activity.getActivityDependentList().isEmpty()){
-                            activity.setColorCard("#FFA500");
                             activity.setTagsEnum(DEPENDENT);
-                        }else{
-                            activity.setColorCard("#2F8BF5");
                         }
                         break;
                 }
             }
 
-            if(activityAux.getSectorActivityEnum().equals(DONE)){
+            if(activityAux.getSectorActivity().equals("DONE")){
                 var activitySaved = activityRepository.save(activity);
                 var activitiesDependents = activityDependentService.findAll(ActivityDependentFilterType.builder().activitySource(activitySaved.getId()).build(),
                         PageRequest.of(0, 9999, ASC, "id"));
                 if(nonNull(activitiesDependents) && !activitiesDependents.isEmpty()){
                     activitiesDependents.forEach(activityDependent -> {
                         var activityUpdate = findById(activityDependent.getActivityBranch().getId());
-                        if(!activityUpdate.getSectorActivityEnum().equals(DONE)){
+                        if(!activityUpdate.getSectorActivity().equals("DONE")){
                             activityUpdate.setTagsEnum(DEPENDENT);
                             activityUpdate.setIsBlock(true);
                         }
@@ -398,10 +358,41 @@ public class ActivityService {
             if(activityRepository.allDependenciesCompleted(activityDependent.getActivityBranch().getId())){
                 var activity = activityRepository.findByActivityId(activityDependent.getActivityBranch().getId());
                 activity.setIsBlock(false);
-                activity.setColorCard("#FFFFFF");
                 activity.setTagsEnum(INDEPENDENT);
                 activityRepository.save(activity);
             }
         });
     }
+
+    @Transactional(readOnly = true)
+    public boolean existBy(Example<Activity> example) {
+        return activityRepository.exists(example);
+    }
+
+
+
+    @Transactional(readOnly = true)
+    public Page<Activity> findAllByProj(ActivityFilterType filter, Pageable pageable) {
+        try {
+            var test = activityRepository.findAllByProj(
+                    filter.getOrganizationId(),
+                    filter.getUserIds(),
+                    filter.getProjectId(),
+                    pageable);
+            return test;
+        } catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Activity> findAllByNoInActivities(ActivityFilterNoInType filter, Pageable pageable) {
+        return activityRepository.findAllByNotInUsers(
+                filter.getOrganizationId(),
+                filter.getIdsActivity(),
+                filter.getColumnId(),
+                pageable);
+    }
+
 }

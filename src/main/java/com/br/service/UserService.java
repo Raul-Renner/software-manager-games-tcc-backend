@@ -1,5 +1,7 @@
 package com.br.service;
 
+import com.br.dto.UserUpdateDTO;
+import com.br.entities.Project;
 import com.br.entities.User;
 import com.br.repository.UserRepository;
 import com.br.type.UserFilterType;
@@ -32,7 +34,6 @@ public class UserService {
 
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
     public void save(User user) {
-        var test = user.getAuthorities();
         try {
             if(nonNull(user.getProjects()) && !user.getProjects().isEmpty()){
                 user.getProjects().forEach(project -> {
@@ -82,14 +83,14 @@ public class UserService {
             if(isNull(userUpdate)){
                 throw new RuntimeException("Erro ao ao editar usuário");
             }
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
+//            user.setPassword(passwordEncoder.encode(user.getPassword()));
             user.getUserInformation().setId(userUpdate.getUserInformation().getId());
             if(nonNull(user.getProjects()) && !user.getProjects().isEmpty()){
                 user.getProjects().forEach(projectAux -> {
                     var project = projectService.findProjectById(projectAux.getId());
                     if(!projectService.getMembersProject(user.getId(), projectAux.getId())){
                         project.getMembers().add(user);
-                        projectService.update(project);
+                        projectService.processUpdate(project);
                     }
                     projectFilterIdsDelete.add(projectAux.getId());
                 });
@@ -105,6 +106,27 @@ public class UserService {
         }
     }
 
+    @Transactional(rollbackFor = {Exception.class, Throwable.class})
+    public void processUpdateProjectAndFunctionUser(UserUpdateDTO userUpdateDTO){
+        var user = findUserById(userUpdateDTO.getId());
+        user.setProfile(userUpdateDTO.getProfile());
+        if(nonNull(userUpdateDTO.getProjectsIds()) && !userUpdateDTO.getProjectsIds().isEmpty()){
+            userUpdateDTO.getProjectsIds().forEach(id -> {
+                    if(!projectService.getMembersProject(user.getId(), id)){
+                        var project = projectService.findProjectById(id);
+                        project.getMembers().add(user);
+                        projectService.processUpdate(project);
+                    }
+            });
+        } else {
+            user.getProjects().clear();
+        }
+
+        projectService.processUpdateProjectsUser(userUpdateDTO.getId(), user.getOrganization().getId(), userUpdateDTO.getProjectsIds());
+
+        userRepository.save(user);
+    }
+
     @Transactional(readOnly = true)
     public boolean existBy(Example<User> example){
         return userRepository.exists(example);
@@ -112,7 +134,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public User findBy(Example<User> example){
-        return userRepository.findOne(example).orElse(null);
+            return userRepository.findOne(example).orElse(null);
     }
 
     @Transactional(readOnly = true)
@@ -122,6 +144,11 @@ public class UserService {
                 filter.getProjectId(),
                 filter.getUserId(),
                 PageRequest.of(0, 9999, ASC, "id"));
+    }
+
+    @Transactional(readOnly = true)
+    public User findUserById(Long userId) {
+        return userRepository.findById(userId).orElse(null);
     }
 
 

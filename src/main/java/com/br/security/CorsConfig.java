@@ -12,9 +12,13 @@ public class CorsConfig{
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        //config.setAllowCredentials(true); // you USUALLY want this
+//        config.setAllowCredentials(true); // you USUALLY want this
         config.addAllowedOrigin("*");
+        config.addAllowedOrigin("http://localhost:4200");
+        config.addAllowedOrigin("http://localhost:8080");
         config.addAllowedHeader("*");
+        config.addAllowedHeader("Access-Control-Allow-Headers");
+        config.addAllowedHeader("Access-Control-Allow-Origin");
         config.addAllowedMethod("OPTIONS");
         config.addAllowedMethod("HEAD");
         config.addAllowedMethod("GET");
@@ -22,7 +26,8 @@ public class CorsConfig{
         config.addAllowedMethod("POST");
         config.addAllowedMethod("DELETE");
         config.addAllowedMethod("PATCH");
-        source.registerCorsConfiguration("/**", config);
+        config.addAllowedMethod("*");
+        source.registerCorsConfiguration("/api/**", config);
         return new org.springframework.web.filter.CorsFilter(source);
     }
 }

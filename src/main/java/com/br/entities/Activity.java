@@ -41,12 +41,10 @@ public class Activity implements Serializable {
     private String usedTime;
 
     @Column(name="sector_activity")
-    @Enumerated(EnumType.STRING)
-    private SectorActivityEnum sectorActivityEnum;
+    private String sectorActivity;
 
     @Column(name="status_activity")
-    @Enumerated(EnumType.STRING)
-    private StatusActivityEnum statusActivityEnum;
+    private Boolean isFinished;
 
     @Column(name="status_priority")
     @Enumerated(EnumType.STRING)
@@ -56,29 +54,21 @@ public class Activity implements Serializable {
     @Enumerated(EnumType.STRING)
     private TagsEnum tagsEnum;
 
-    @Column(name="color")
-    private String colorCard;
-
     @Column(name = "is_blocked")
     private Boolean isBlock;
 
-    @OneToMany(mappedBy = "activityBranch")
+    @OneToMany(mappedBy = "activityBranch",cascade = CascadeType.REMOVE)
     private List<ActivityDependent> activityDependentList;
 
     @ManyToOne
     @JsonIgnore
-    @JoinColumn(name = "id_board")
-    private Board board;
+    @JoinColumn(name = "id_column")
+    private ColumnBoard columnBoard;
 
-    @OneToOne
+    @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "id_user")
     private User user;
-
-//    @ManyToOne
-//    @JsonIgnore
-//    @JoinColumn(name = "id_project")
-//    private Project project;
 
     public Activity() {
         this.identifier = "#" + counter++;

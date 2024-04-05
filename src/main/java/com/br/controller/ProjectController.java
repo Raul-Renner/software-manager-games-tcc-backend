@@ -3,6 +3,7 @@ package com.br.controller;
 import com.br.entities.Project;
 import com.br.service.ProjectService;
 import com.br.type.ProjectFilterType;
+import com.br.validation.ValidColumnBoard;
 import com.br.validation.ValidProject;
 
 import com.br.vo.ProjectSaveVO;
@@ -51,7 +52,7 @@ public class ProjectController {
             }
             Project project = projectUpdateVO.toEntity();
             project.setId(id);
-            projectService.update(project);
+            projectService.processUpdate(project);
             return ResponseEntity.ok("Update realizado com sucesso!");
         } catch (Exception e) {
             throw new RuntimeException("Erro ao editar dados do projeto.");
@@ -80,6 +81,19 @@ public class ProjectController {
         } catch (Exception e){
             return new ResponseEntity<>("Um erro inesperado ocorreu ao buscar projeto.",
                     HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @CrossOrigin
+    @DeleteMapping("/delete-board/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_GERENTE', 'ROLE_LIDER_TECNICO')")
+    public ResponseEntity deleteBoard(@PathVariable("id") @Valid @ValidColumnBoard Long id) {
+        try {
+            projectService.processRemoveColumnBoard(id);
+            return ResponseEntity.ok("Coluna removida com sucesso!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body( "Error ao deletar coluna no board.");
         }
     }
 

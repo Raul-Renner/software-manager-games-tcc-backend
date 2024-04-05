@@ -2,9 +2,9 @@ package com.br.vo;
 
 import com.br.entities.Activity;
 import com.br.entities.ActivityDependent;
-import com.br.entities.Board;
+import com.br.entities.ColumnBoard;
 import com.br.enums.*;
-import com.br.validation.ValidBoard;
+import com.br.validation.ValidColumnBoard;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -46,9 +46,9 @@ public class ActivitySaveVO {
 
     private String usedTime;
 
-    private SectorActivityEnum sectorActivityEnum;
+    private String sectorActivity;
 
-    private StatusActivityEnum statusActivityEnum;
+    private Boolean isFinished;
 
     private StatusPriorityEnum statusPriorityEnum;
 
@@ -60,8 +60,8 @@ public class ActivitySaveVO {
 
     private UserSaveVO userSaveVO;
 
-    @ValidBoard
-    private Long boardId;
+    @ValidColumnBoard
+    private Long columnBoardId;
 
     public Activity toEntity(){
         var activity = Activity.builder()
@@ -70,9 +70,10 @@ public class ActivitySaveVO {
                 .identifier("#" + (identifier++))
                 .description(description)
                 .estimatedTime(isNull(estimatedTime) ? "-" : estimatedTime)
-                .isBlock(isBlock)
-                .sectorActivityEnum(nonNull(sectorActivityEnum) ? sectorActivityEnum : TO_DO)
-                .statusActivityEnum(nonNull(statusActivityEnum) ? statusActivityEnum : StatusActivityEnum.TO_DO)
+                .usedTime(nonNull(usedTime) ? usedTime : "-")
+                .isBlock(nonNull(isBlock) ? isBlock : false)
+                .sectorActivity(nonNull(sectorActivity) ? sectorActivity : "TODO")
+                .isFinished(nonNull(isFinished) ? isFinished : false)
                 .activityDependentList(nonNull(activityDependentIds) ?
                         activityDependentIds.stream().map(id -> ActivityDependent.builder()
                                         .activitySource(id).build())
@@ -80,8 +81,8 @@ public class ActivitySaveVO {
                         new ArrayList<>())
                 .tagsEnum(nonNull(tagsEnum) ? tagsEnum : INDEPENDENT)
                 .statusPriorityEnum(nonNull(statusPriorityEnum) ? statusPriorityEnum : LOW)
-                .user(nonNull(userSaveVO) ? userSaveVO.toEntity() : null)
-                .board(Board.builder().id(boardId).build())
+                .user(nonNull(userSaveVO)? userSaveVO.toEntity() : null)
+                .columnBoard(nonNull(columnBoardId) ? ColumnBoard.builder().id(columnBoardId).build(): null)
                 .build();
 
         return activity;

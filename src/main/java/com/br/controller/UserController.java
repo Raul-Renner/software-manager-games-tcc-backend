@@ -1,5 +1,6 @@
 package com.br.controller;
 
+import com.br.dto.UserUpdateDTO;
 import com.br.service.UserService;
 
 import com.br.type.UserFilterType;
@@ -9,7 +10,6 @@ import com.br.vo.UserUpdateVO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,10 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 
-import javax.validation.constraints.Null;
 import java.util.List;
 
-import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.http.ResponseEntity.ok;
 import static reactor.core.publisher.Mono.*;
 import static com.br.fieldQueries.UserFieldQuery.valueOf;
@@ -51,8 +49,9 @@ public class UserController {
     @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_GERENTE', 'ROLE_LIDER_TECNICO')")
     public ResponseEntity delete(@PathVariable @Valid @ValidUser Long id) {
         try {
+            //"Usuário com o id " + id + " removido com sucesso!"
             userService.processRemove(id);
-            return ResponseEntity.ok("Usuário com o id " + id + " removido com sucesso!");
+            return ResponseEntity.ok(HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("tes", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -61,7 +60,7 @@ public class UserController {
     @CrossOrigin
     @PutMapping("{id}")
     @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_GERENTE', 'ROLE_LIDER_TECNICO', 'ROLE_DESENVOLVEDOR')")
-    public ResponseEntity update(@PathVariable @Valid @ValidUser Long id, @RequestBody @Valid UserUpdateVO userUpdateVO){
+    public ResponseEntity update(@PathVariable("id") @Valid @ValidUser Long id, @RequestBody @Valid UserUpdateVO userUpdateVO){
         try {
             if (!userUpdateVO.getId().equals(id)) {
                 throw new RuntimeException("Os ids do usuário repassado nao conferem.");
@@ -77,16 +76,19 @@ public class UserController {
     }
 
     @CrossOrigin
-    @PutMapping()
+    @PutMapping("update-user-function/{id}")
     @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_GERENTE', 'ROLE_LIDER_TECNICO')")
-    public Mono<?> updateProjectAndFunctionUser(@PathVariable @ValidUser Long id, @RequestBody @Valid UserUpdateVO userUpdateVO){
-
-        if (!userUpdateVO.getId().equals(id)) {
-            throw new RuntimeException("Os ids do usuário repassado nao conferem.");
+    public ResponseEntity updateProjectAndFunctionUser(@PathVariable @ValidUser Long id, @RequestBody @Valid UserUpdateDTO userUpdateDTO){
+        try {
+            if (!userUpdateDTO.getId().equals(id)) {
+                throw new RuntimeException("Os ids do usuário repassado nao conferem.");
+            }
+            userService.processUpdateProjectAndFunctionUser(userUpdateDTO);
+            return ResponseEntity.ok(HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("tes", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        var user = userUpdateVO.toEntity();
-        user.setId(id);
-        return just(ok().build());
+
     }
 
     @GetMapping

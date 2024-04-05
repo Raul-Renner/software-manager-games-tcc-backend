@@ -13,8 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Mono;
-import static reactor.core.publisher.Mono.*;
+
 import static com.br.fieldQueries.OrganizationFieldQuery.valueOf;
 @Slf4j
 @RestController
@@ -61,9 +60,9 @@ public class OrganizationController {
     @CrossOrigin
     @GetMapping("/find-by")
     @PreAuthorize("hasRole('ROLE_ADMINISTRADOR')")
-    public Mono<?> findBy(@RequestParam String field, @RequestParam String value) {
+    public ResponseEntity findBy(@RequestParam String field, @RequestParam String value) {
         log.info("Searching organization by field: {} and value {}.", field, value);
-        return justOrEmpty(organizationService.findBy(valueOf(field).findBy(value)));
+        return ResponseEntity.ok(organizationService.findBy(valueOf(field).findBy(value)));
     }
 
 }

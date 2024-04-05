@@ -40,6 +40,7 @@ public class Project implements Serializable {
     private Organization organization;
 
     @ManyToMany
+    @JsonIgnore
     @JoinTable(name = "project_members", joinColumns = {
             @JoinColumn(name = "id_project", nullable = false)},
             inverseJoinColumns = {@JoinColumn(name = "id_user", nullable = false)})
@@ -48,7 +49,6 @@ public class Project implements Serializable {
     @Column(name = "is_finished")
     private Boolean isFinished;
 
-    @OneToOne(cascade = REMOVE)
-    @JoinColumn(name = "id_board")
-    private Board board;
+    @OneToMany(mappedBy = "project",cascade = CascadeType.REMOVE)
+    private List<ColumnBoard> columnsBoard;
 }

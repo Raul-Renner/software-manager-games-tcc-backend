@@ -1,8 +1,8 @@
 package com.br.vo;
 
-import com.br.entities.Board;
 import com.br.entities.ColumnBoard;
-import com.br.validation.ValidBoard;
+import com.br.entities.Project;
+import com.br.validation.ValidProject;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -31,18 +31,15 @@ public class ColumnBoardSaveVO implements Serializable {
     @Size(min = 3, max = 20, message = "O nome da coluna deve conter entre 3 e 20 caracteres.")
     private String name;
 
-    @NotNull(message = "A descrição da coluna é obrigatório.")
-    @NotBlank(message = "A descrição da coluna é obrigatório.")
-    @Size(min = 3, max = 20, message = "A descrição da coluna deve conter entre 3 e 20 caracteres.")
-    private String description;
+    private String sectorActivity;
 
-    @ValidBoard
-    private Long boardId;
+    @ValidProject
+    private Long projectId;
 
     public ColumnBoard toEntity(){
         return ColumnBoard.builder()
-                .board(Board.builder().id(boardId).build())
-                .description(description)
+                .sectorActivity(sectorActivity)
+                .project(Project.builder().id(projectId).build())
                 .name(name).build();
 
     }
