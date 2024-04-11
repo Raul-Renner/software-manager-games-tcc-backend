@@ -387,11 +387,10 @@ public class ActivityService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Activity> findAllByNoInActivities(ActivityFilterNoInType filter, Pageable pageable) {
-        return activityRepository.findAllByNotInUsers(
+    public Page<Activity> findAllBy(ActivityFilterType filter, Pageable pageable) {
+        return activityRepository.findAllBy(
                 filter.getOrganizationId(),
-                filter.getIdsActivity(),
-                filter.getColumnId(),
+                filter.getProjectId(),
                 pageable);
     }
 

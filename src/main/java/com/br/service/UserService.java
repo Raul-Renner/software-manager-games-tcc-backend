@@ -5,6 +5,7 @@ import com.br.entities.Project;
 import com.br.entities.User;
 import com.br.repository.UserRepository;
 import com.br.type.UserFilterType;
+import com.br.util.PasswordRandom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.br.fieldQueries.ProjectFieldQuery.ORGANIZATION_ID_PROJECT_ID;
 import static java.util.List.of;
@@ -32,6 +34,8 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final PasswordRandom passwordRandom;
+
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
     public void save(User user) {
         try {
@@ -43,14 +47,16 @@ public class UserService {
                     }
                 });
             }
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-          var userCopy = userRepository.save(user);
-          if(nonNull(userCopy.getProjects()) && !userCopy.getProjects().isEmpty()){
+
+            var password = passwordRandom.generatePassword();
+            user.setPassword(passwordEncoder.encode(password));
+            var userCopy = userRepository.save(user);
+            if(nonNull(userCopy.getProjects()) && !userCopy.getProjects().isEmpty()){
               userCopy.getProjects().forEach(projectAux -> {
                   var project = projectService.findProjectById(projectAux.getId());
                   project.getMembers().add(userCopy);
                   projectService.update(project);
-              });
+            });
           }
         }catch (Exception e){
             throw new RuntimeException(e.getMessage());
@@ -60,6 +66,12 @@ public class UserService {
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
     public void processRemove(Long id) {
         try {
+            var user = findUserById(id);
+            var projectsIds = new ArrayList<Long>();
+            if(nonNull(user.getProjects()) && !user.getProjects().isEmpty()){
+                user.getProjects().forEach(project -> projectsIds.add(project.getId()));
+                projectService.processUpdateProjectsUser(id, user.getOrganization().getId(), projectsIds);
+            }
             delete(id);
         }catch (Exception e){
             throw new RuntimeException("Erro ao remover usuário");
@@ -83,7 +95,8 @@ public class UserService {
             if(isNull(userUpdate)){
                 throw new RuntimeException("Erro ao ao editar usuário");
             }
-//            user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+            user.setPassword(userUpdate.getPassword());
             user.getUserInformation().setId(userUpdate.getUserInformation().getId());
             if(nonNull(user.getProjects()) && !user.getProjects().isEmpty()){
                 user.getProjects().forEach(projectAux -> {
@@ -109,7 +122,7 @@ public class UserService {
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
     public void processUpdateProjectAndFunctionUser(UserUpdateDTO userUpdateDTO){
         var user = findUserById(userUpdateDTO.getId());
-        user.setProfile(userUpdateDTO.getProfile());
+        user.setProfile(nonNull(userUpdateDTO.getProfile()) ? userUpdateDTO.getProfile() : user.getProfile());
         if(nonNull(userUpdateDTO.getProjectsIds()) && !userUpdateDTO.getProjectsIds().isEmpty()){
             userUpdateDTO.getProjectsIds().forEach(id -> {
                     if(!projectService.getMembersProject(user.getId(), id)){

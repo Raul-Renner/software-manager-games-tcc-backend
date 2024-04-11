@@ -42,10 +42,10 @@ public class UserUpdateVO implements Serializable {
     @Size(min = 3, max = 20, message = "O nome de usuario deve conter entre 3 e 20 caracteres.")
     private String login;
 
-    @NotNull(message = "A senha é obrigatório.")
-    @NotBlank(message = "A senha é obrigatório.")
-    @Size(min = 8, max = 20, message = "A senha de usuario deve conter entre 8 e 20 caracteres.")
-    private String password;
+//    @NotNull(message = "A senha é obrigatório.")
+//    @NotBlank(message = "A senha é obrigatório.")
+//    @Size(min = 8, max = 20, message = "A senha de usuario deve conter entre 8 e 20 caracteres.")
+//    private String password;
 
     @NotNull(message = "O nome é obrigatório.")
     @NotBlank(message = "O nome é obrigatório.")
@@ -73,7 +73,6 @@ public class UserUpdateVO implements Serializable {
         var user = User.builder()
                 .id(id)
                 .login(login)
-                .password(password)
                 .profile(profileEnum)
                 .userInformation(UserInformation.builder()
                         .name(name)

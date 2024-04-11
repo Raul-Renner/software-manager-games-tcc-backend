@@ -36,13 +36,13 @@ public class UserSaveVO implements Serializable {
     @Id
     private Long id;
 
-    @NotBlank(message = "O Login é obrigatório")
-    @Size(min = 3, max = 20, message = "O nome de usuario deve conter entre 3 e 20 caracteres.")
+//    @NotBlank(message = "O Login é obrigatório")
+//    @Size(min = 3, max = 20, message = "O nome de usuario deve conter entre 3 e 20 caracteres.")
     private String login;
 
-    @NotNull(message = "A senha é obrigatório.")
-    @NotBlank(message = "A senha é obrigatório.")
-    @Size(min = 8, max = 20, message = "A senha deve conter entre 8 e 20 caracteres.")
+//    @NotNull(message = "A senha é obrigatório.")
+//    @NotBlank(message = "A senha é obrigatório.")
+//    @Size(min = 8, max = 20, message = "A senha deve conter entre 8 e 20 caracteres.")
     private String password;
 
     @NotNull(message = "O nome é obrigatório.")

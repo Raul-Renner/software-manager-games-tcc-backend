@@ -41,4 +41,11 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
                                        @Param("idsActivity") List<Long> idsActivity,
                                        @Param("columnId") Long columnId,
                                        Pageable pageable);
+
+    @Query("SELECT DISTINCT a FROM Activity a " +
+            "WHERE ((:projectId) IS NULL OR a.columnBoard.project.id IN :projectId) " +
+            "AND ((:organizationId) IS NULL OR a.columnBoard.project.organization.id IN :organizationId) ")
+    Page<Activity> findAllBy(@Param("organizationId") Long organizationId,
+                                 @Param("projectId") Long projectId,
+                                 Pageable pageable);
 }

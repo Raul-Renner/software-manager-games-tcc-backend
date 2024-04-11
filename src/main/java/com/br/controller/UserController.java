@@ -36,7 +36,7 @@ public class UserController {
     public ResponseEntity save(@RequestBody @Valid UserSaveVO userSaveVO) {
         try {
             userService.save(userSaveVO.toEntity());
-            return ResponseEntity.ok("Usuário cadastrado com sucesso!");
+            return ResponseEntity.ok(HttpStatus.OK);
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -68,7 +68,7 @@ public class UserController {
             var user = userUpdateVO.toEntity();
             user.setId(id);
             userService.processUpdate(user);
-            return ResponseEntity.ok("Dados do usuário com o id " + id + " atualizado com sucesso!");
+            return ResponseEntity.ok(HttpStatus.OK);
 
         } catch (Exception e) {
             return new ResponseEntity<>("tes", HttpStatus.INTERNAL_SERVER_ERROR);

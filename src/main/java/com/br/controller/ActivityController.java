@@ -1,6 +1,8 @@
 package com.br.controller;
 
 import com.br.entities.Activity;
+import com.br.type.ActivityFilterType;
+import com.br.type.ProjectFilterType;
 import com.br.validation.ValidActivity;
 import com.br.vo.ActivitySaveVO;
 import com.br.service.ActivityService;
@@ -51,7 +53,7 @@ public class ActivityController {
     public ResponseEntity delete(@PathVariable("id") @ValidActivity Long id) {
         try {
             activityService.processRemove(id);
-            return ResponseEntity.ok("Atividade deleta com sucesso!");
+            return ResponseEntity.ok(HttpStatus.OK);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body( "Error ao tentar remover atividade");
@@ -97,6 +99,18 @@ public class ActivityController {
             return ResponseEntity.ok(activityService.findAll(PageRequest.of(0, 9999, ASC, "id")));
         }catch (Exception e){
             throw new RuntimeException("Erro ao listar atividades.");
+        }
+    }
+
+    @CrossOrigin
+    @GetMapping("/findAllBy")
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_GERENTE', 'ROLE_LIDER_TECNICO')")
+    public ResponseEntity findAllBy(ActivityFilterType filter) {
+        try {
+            return ResponseEntity.ok(activityService.findAllBy(filter, PageRequest.of(0, 9999, ASC, "id")));
+        } catch (Exception e){
+            return new ResponseEntity<>("Um erro inesperado ocorreu listar atividades.",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

@@ -3,6 +3,7 @@ package com.br.service;
 import com.br.entities.*;
 import com.br.repository.OrganizationRepository;
 
+import com.br.util.PasswordRandom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Example;
@@ -23,11 +24,12 @@ public class OrganizationService {
 
     private final UserService userService;
 
+    private final PasswordRandom passwordRandom;
+
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
     public void save(Organization organization) {
         try {
            var organizationCopy = organizationRepository.save(organization);
-
             userService.save(User.builder()
                             .userInformation(UserInformation.builder()
                                     .email(organizationCopy.getEmail())
@@ -35,7 +37,6 @@ public class OrganizationService {
                                     .username(organizationCopy.getName())
                                     .build())
                             .login("username011" + organizationCopy.getId())
-                            .password("password011" + organizationCopy.getId())
                             .organization(organizationCopy)
                             .profile(ADMINISTRADOR)
 
@@ -43,7 +44,6 @@ public class OrganizationService {
 
         }catch (Exception e){
             throw new RuntimeException("Erro ao criar sua organização" );
-
         }
     }
 

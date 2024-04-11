@@ -1,5 +1,6 @@
 package com.br.controller;
 
+import com.br.dto.ProjectUpdateDTO;
 import com.br.entities.Project;
 import com.br.service.ProjectService;
 import com.br.type.ProjectFilterType;
@@ -36,7 +37,7 @@ public class ProjectController {
     public ResponseEntity save(@RequestBody @Valid ProjectSaveVO projectSaveVO){
         try {
             projectService.save(projectSaveVO.toEntity());
-            return ResponseEntity.ok("Projeto criado com sucesso!");
+            return ResponseEntity.ok(HttpStatus.OK);
         } catch (Exception e) {
             throw new RuntimeException("Erro ao cadastrar projeto.");
         }
@@ -53,7 +54,7 @@ public class ProjectController {
             Project project = projectUpdateVO.toEntity();
             project.setId(id);
             projectService.processUpdate(project);
-            return ResponseEntity.ok("Update realizado com sucesso!");
+            return ResponseEntity.ok(HttpStatus.OK);
         } catch (Exception e) {
             throw new RuntimeException("Erro ao editar dados do projeto.");
         }
@@ -61,12 +62,31 @@ public class ProjectController {
     }
 
     @CrossOrigin
+    @PutMapping("update-titleAndDesc/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMINISTRADOR')")
+    public ResponseEntity updateDescription(@PathVariable @ValidProject Long id, @RequestBody @Valid ProjectUpdateDTO projectUpdateDTO){
+        try {
+            if (!projectUpdateDTO.getId().equals(id)) {
+                throw new RuntimeException("Os ids do projeto repassado nao conferem.");
+            }
+        //    Project project = projectUpdateVO.toEntity();
+         //   project.setId(id);
+            projectService.processUpdateDesc(projectUpdateDTO);
+            return ResponseEntity.ok(HttpStatus.OK);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao editar dados do projeto.");
+        }
+
+    }
+
+
+    @CrossOrigin
     @DeleteMapping("{id}")
     @PreAuthorize("hasRole('ROLE_ADMINISTRADOR')")
     public ResponseEntity delete(@PathVariable @Valid @ValidProject Long id) {
         try {
             projectService.processRemove(id);
-            return ResponseEntity.ok("Projeto REMOVIDO com sucesso!");
+            return ResponseEntity.ok(HttpStatus.OK);
         } catch (Exception e) {
             throw new RuntimeException("Erro ao DELETAR projeto.");
         }
@@ -74,7 +94,7 @@ public class ProjectController {
 
     @CrossOrigin
     @GetMapping("/findAllBy")
-    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_GERENTE', 'ROLE_LIDER_TECNICO')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR','ROLE_DESENVOLVEDOR', 'ROLE_GERENTE', 'ROLE_LIDER_TECNICO')")
     public ResponseEntity findAllBy(ProjectFilterType filter) {
         try {
             return ResponseEntity.ok(projectService.findAll(filter, PageRequest.of(0, 9999, ASC, "id")));

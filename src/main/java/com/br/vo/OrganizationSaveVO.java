@@ -53,7 +53,8 @@ public class OrganizationSaveVO implements Serializable {
                 .name(name)
                 .description(description)
                 .email(email)
-                .owners(nonNull(userSaveVOList) && !userSaveVOList.isEmpty() ? (List<User>) userSaveVOList.stream()
+                .owners(nonNull(userSaveVOList) && !userSaveVOList.isEmpty() ?
+                        (List<User>) userSaveVOList.stream()
                         .map(UserSaveVO::toEntity).collect(Collectors.toSet()) : null)
                 .projects(nonNull(projectSaveVOList) && !projectSaveVOList.isEmpty() ? (List<Project>) projectSaveVOList.stream()
                         .map(ProjectSaveVO::toEntity).collect(Collectors.toSet()) : null).build();

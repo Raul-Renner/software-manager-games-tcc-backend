@@ -1,5 +1,6 @@
 package com.br.service;
 
+import com.br.dto.ProjectUpdateDTO;
 import com.br.entities.ColumnBoard;
 import com.br.entities.Project;
 import com.br.repository.ProjectRepository;
@@ -165,6 +166,13 @@ public class ProjectService {
         }catch (Exception e){
             throw new RuntimeException("Erro ao remover projeto");
         }
+    }
+
+    @Transactional(rollbackFor = {Exception.class, Throwable.class})
+    public void processUpdateDesc(ProjectUpdateDTO updateDTO) {
+        var project = findProjectById(updateDTO.getId());
+        project.setName(updateDTO.getName());
+        project.setDescription(updateDTO.getDescription());
     }
 
 
