@@ -3,9 +3,11 @@ package com.br.vo;
 import com.br.entities.Activity;
 import com.br.entities.ActivityDependent;
 import com.br.entities.ColumnBoard;
+import com.br.entities.Project;
 import com.br.enums.*;
 import com.br.validation.ValidActivity;
 import com.br.validation.ValidColumnBoard;
+import com.br.validation.ValidProject;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -68,6 +70,9 @@ public class ActivityUpdateVO {
     @ValidColumnBoard
     private Long columnBoardId;
 
+    @ValidProject
+    private Long projectId;
+
     public Activity toEntity(){
         var activity = Activity.builder()
                 .id(id)
@@ -88,6 +93,7 @@ public class ActivityUpdateVO {
                 .user(nonNull(userSaveVO) ? userSaveVO.toEntity() : null)
                 .usedTime(isNull(usedTime) ? "-" : usedTime)
                 .columnBoard(nonNull(columnBoardId) ? ColumnBoard.builder().id(columnBoardId).build(): null)
+                .project(nonNull(projectId) ? Project.builder().id(projectId).build(): null)
                 .build();
 
         return activity;

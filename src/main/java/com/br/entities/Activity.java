@@ -70,6 +70,11 @@ public class Activity implements Serializable {
     @JoinColumn(name = "id_user")
     private User user;
 
+    @ManyToOne
+    @JsonIgnore
+    @JoinColumn(name = "id_project")
+    private Project project;
+
     public Activity() {
         this.identifier = "#" + counter++;
     }

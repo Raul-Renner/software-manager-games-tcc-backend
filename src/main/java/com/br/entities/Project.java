@@ -51,4 +51,7 @@ public class Project implements Serializable {
 
     @OneToMany(mappedBy = "project",cascade = CascadeType.REMOVE)
     private List<ColumnBoard> columnsBoard;
+
+    @OneToMany(mappedBy = "project",cascade = CascadeType.REMOVE)
+    private List<Activity> activities;
 }
