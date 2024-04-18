@@ -38,6 +38,9 @@ public class ColumnBoard implements Serializable {
     @JoinColumn(name = "id_project")
     private Project project;
 
+    @Column(name="phase")
+    private String phase;
+
     @OneToMany(mappedBy = "columnBoard", cascade = CascadeType.REMOVE)
     private List<Activity> activities;
 

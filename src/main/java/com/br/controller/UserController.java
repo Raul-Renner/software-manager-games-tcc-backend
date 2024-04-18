@@ -3,6 +3,7 @@ package com.br.controller;
 import com.br.dto.UserUpdateDTO;
 import com.br.service.UserService;
 
+import com.br.type.UserFilterPerActivityType;
 import com.br.type.UserFilterType;
 import com.br.validation.ValidUser;
 import com.br.vo.UserSaveVO;
@@ -114,6 +115,20 @@ public class UserController {
             return ResponseEntity.ok(userService.findBy(valueOf(field).findBy(values)));
         } catch (Exception e){
             return new ResponseEntity<>("Um erro inesperado ocorreu ao buscar o usuário.",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+    @CrossOrigin
+    @GetMapping("/find-by-activity")
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_GERENTE', 'ROLE_LIDER_TECNICO', 'ROLE_DESENVOLVEDOR')")
+    public ResponseEntity findAllUserByActivity(UserFilterPerActivityType filter){
+        try{
+            log.info("Searching all profiles");
+            return ResponseEntity.ok(userService.findAllUserByActivity(filter));
+        } catch (Exception e) {
+            return new ResponseEntity<>("Um erro inesperado ocorreu ao buscar todos os usuários.",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
 

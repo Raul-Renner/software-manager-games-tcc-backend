@@ -3,7 +3,6 @@ package com.br.controller;
 import com.br.entities.ColumnBoard;
 import com.br.service.ColumnBoardService;
 import com.br.validation.ValidColumnBoard;
-import com.br.validation.ValidProject;
 import com.br.vo.ColumnBoardSaveVO;
 import com.br.vo.ColumnBoardUpdateVO;
 import jakarta.validation.Valid;
@@ -13,12 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Mono;
 
-
-import static org.springframework.http.ResponseEntity.ok;
-import static reactor.core.publisher.Mono.empty;
-import static reactor.core.publisher.Mono.just;
 
 @Slf4j
 @RestController
@@ -34,7 +28,7 @@ public class ColumnBoardController {
     public ResponseEntity save(@RequestBody @Valid ColumnBoardSaveVO columnBoardSaveVO){
         try{
             columnBoardService.save(columnBoardSaveVO.toEntity());
-            return ResponseEntity.ok("Coluna cadastrada com sucesso!");
+            return ResponseEntity.ok(HttpStatus.OK);
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -53,7 +47,7 @@ public class ColumnBoardController {
             ColumnBoard columnBoard = columnBoardUpdateVO.toEntity();
             columnBoard.setId(id);
             columnBoardService.update(columnBoard);
-            return ResponseEntity.ok("Informações da coluna atualizadas com sucesso!");
+            return ResponseEntity.ok(HttpStatus.OK);
         } catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body( "Error ao tentar atualizar informações da coluna no board.");
@@ -67,7 +61,7 @@ public class ColumnBoardController {
     public ResponseEntity delete(@PathVariable("id") @Valid @ValidColumnBoard Long id) {
         try {
             columnBoardService.processRemove(id);
-            return ResponseEntity.ok("Coluna removida com sucesso!");
+            return ResponseEntity.ok(HttpStatus.OK);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body( "Error ao deletar coluna no board.");

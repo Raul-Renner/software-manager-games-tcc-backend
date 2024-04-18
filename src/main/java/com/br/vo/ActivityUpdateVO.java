@@ -63,7 +63,7 @@ public class ActivityUpdateVO {
 
     private Boolean isBlock;
 
-    private List<Long> activityDependentIds;
+    private List<ActivityDependentVO> activityDependentIds;
 
     private UserSaveVO userSaveVO;
 
@@ -83,11 +83,7 @@ public class ActivityUpdateVO {
                 .isBlock(nonNull(isBlock) ? isBlock : false)
                 .sectorActivity(nonNull(sectorActivity) ? sectorActivity : "TODO")
                 .isFinished(nonNull(isFinished) ? isFinished : false)
-                .activityDependentList(nonNull(activityDependentIds) ?
-                        activityDependentIds.stream().map(id -> ActivityDependent.builder()
-                                        .activitySource(id).build())
-                                .collect(Collectors.toList()) :
-                        new ArrayList<>())
+                .activityDependentList(nonNull(activityDependentIds) ? activityDependentIds.stream().map(ActivityDependentVO::toEntity).collect(Collectors.toList()) : null)
                 .tagsEnum(nonNull(tagsEnum) ? tagsEnum : INDEPENDENT)
                 .statusPriorityEnum(nonNull(statusPriorityEnum) ? statusPriorityEnum : LOW)
                 .user(nonNull(userSaveVO) ? userSaveVO.toEntity() : null)

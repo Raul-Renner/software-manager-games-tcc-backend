@@ -1,9 +1,9 @@
 package com.br.service;
 
 import com.br.dto.UserUpdateDTO;
-import com.br.entities.Project;
 import com.br.entities.User;
 import com.br.repository.UserRepository;
+import com.br.type.UserFilterPerActivityType;
 import com.br.type.UserFilterType;
 import com.br.util.PasswordRandom;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+
 
 import static com.br.fieldQueries.ProjectFieldQuery.ORGANIZATION_ID_PROJECT_ID;
 import static java.util.List.of;
@@ -156,6 +155,15 @@ public class UserService {
                 filter.getOrganizationId(),
                 filter.getProjectId(),
                 filter.getUserId(),
+                PageRequest.of(0, 9999, ASC, "id"));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<User> findAllUserByActivity(UserFilterPerActivityType filter){
+        return userRepository.findAllUserBy(
+                filter.getOrganizationId(),
+                filter.getProjectId(),
+                filter.getActivityId(),
                 PageRequest.of(0, 9999, ASC, "id"));
     }
 

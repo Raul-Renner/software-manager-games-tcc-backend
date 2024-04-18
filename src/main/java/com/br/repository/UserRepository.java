@@ -29,12 +29,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT DISTINCT u FROM User u " +
             "LEFT JOIN u.projects p ON p.organization.id = u.organization.id " +
+            "LEFT JOIN u.activities a ON a.project.id = p.id " +
             "WHERE ((:organizationId) IS NULL OR u.organization.id IN (:organizationId)) " +
             "AND ((:projectId) IS NULL OR p.id IN (:projectId)) " +
-            "AND ((:userId) IS NULL OR u.id NOT IN (:userIds)) ")
-    Page<User> findAllUsersNoIn(@Param("organizationId") Long organizationId,
+            "AND ((:activityId) IS NULL OR a.id IN (:activityId)) ")
+    Page<User> findAllUserBy(@Param("organizationId") Long organizationId,
                        @Param("projectId") Long projectId,
-                       @Param("userIds") List<Long> userIds,
+                       @Param("activityId") Long activityId,
                        Pageable pageable);
 
     UserDetails findByLogin(String login);

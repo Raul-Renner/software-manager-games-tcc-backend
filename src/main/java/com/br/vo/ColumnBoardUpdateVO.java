@@ -4,6 +4,7 @@ import com.br.entities.ColumnBoard;
 import com.br.entities.Project;
 import com.br.validation.ValidColumnBoard;
 import com.br.validation.ValidProject;
+import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -34,12 +35,15 @@ public class ColumnBoardUpdateVO implements Serializable {
 
     private String sectorActivity;
 
+    private String phase;
+
     @ValidProject
     private Long projectId;
 
     public ColumnBoard toEntity() {
         return ColumnBoard.builder()
                 .sectorActivity(sectorActivity)
+                .phase(phase)
                 .project(Project.builder().id(projectId).build())
                 .name(name).build();
     }

@@ -89,6 +89,7 @@ public class ColumnBoardService {
                             .tagsEnum(activity.getTagsEnum())
                             .statusPriorityEnum(activity.getStatusPriorityEnum())
                             .columnBoard(columnTodo)
+                            .project(activity.getProject())
                             .user(nonNull(activity.getUser()) ? activity.getUser() : null)
                             .usedTime(nonNull(activity.getUsedTime()) ? activity.getUsedTime() : "-")
                             .isFinished(activity.getIsFinished())
@@ -138,30 +139,35 @@ public class ColumnBoardService {
                         .project(columnBoard.getProject())
                         .name("ToDo")
                         .sectorActivity("TO_DO")
+                        .phase("INITIAL")
                         .build());
 
         save(ColumnBoard.builder()
                 .project(columnBoard.getProject())
                 .name("Preparação")
                 .sectorActivity("PREPARATION")
+                .phase("INITIAL")
                 .build());
 
         save(ColumnBoard.builder()
                 .project(columnBoard.getProject())
                 .name("Integração")
                 .sectorActivity("INTEGRATION")
+                .phase("FINALIZATION")
                 .build());
 
         save(ColumnBoard.builder()
                 .project(columnBoard.getProject())
                 .name("Teste")
                 .sectorActivity("TEST")
+                .phase("FINALIZATION")
                 .build());
 
         save(ColumnBoard.builder()
                 .project(columnBoard.getProject())
                 .name("Feito")
                 .sectorActivity("DONE")
+                .phase("FINALIZATION")
                 .build());
     }
 

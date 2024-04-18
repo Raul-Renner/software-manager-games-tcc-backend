@@ -44,7 +44,6 @@ public class ActivityService {
                 switch (activity.getTagsEnum()){
                     case URGENT:
                         activity.setStatusPriorityEnum(StatusPriorityEnum.HIGH);
-                        activity.setSectorActivity("PRIORITY");
                         break;
                     case DEPENDENT:
                         if(nonNull(activity.getActivityDependentList()) && !activity.getActivityDependentList().isEmpty()){
@@ -286,11 +285,14 @@ public class ActivityService {
 
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
     public void updateSectorCard(Activity activity) {
+        var activityAux = findById(activity.getId());
+        if(nonNull(activityAux.getUser())){
+            activity.setUser(activityAux.getUser());
+        }
         if(activity.getSectorActivity().equals("DONE")){
             activityRepository.save(activity);
             checkDependents(activity.getId());
         }else{
-            var activityAux = findById(activity.getId());
             if(nonNull(activity.getTagsEnum())){
                 switch (activity.getTagsEnum()){
                     case URGENT:

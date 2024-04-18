@@ -33,12 +33,15 @@ public class ColumnBoardSaveVO implements Serializable {
 
     private String sectorActivity;
 
+    private String phase;
+
     @ValidProject
     private Long projectId;
 
     public ColumnBoard toEntity(){
         return ColumnBoard.builder()
                 .sectorActivity(sectorActivity)
+                .phase(phase)
                 .project(Project.builder().id(projectId).build())
                 .name(name).build();
 

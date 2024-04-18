@@ -2,7 +2,6 @@ package com.br.controller;
 
 import com.br.entities.Activity;
 import com.br.type.ActivityFilterType;
-import com.br.type.ProjectFilterType;
 import com.br.validation.ValidActivity;
 import com.br.vo.ActivitySaveVO;
 import com.br.service.ActivityService;
@@ -10,18 +9,14 @@ import com.br.vo.ActivityUpdateVO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Mono;
 
 import static org.springframework.data.domain.Sort.Direction.ASC;
-import static org.springframework.http.ResponseEntity.ok;
-import static reactor.core.publisher.Mono.empty;
-import static reactor.core.publisher.Mono.just;
+
 
 
 @Slf4j
@@ -31,7 +26,6 @@ import static reactor.core.publisher.Mono.just;
 public class ActivityController {
 
 
-    @Autowired
     private final ActivityService activityService;
 
     @CrossOrigin
@@ -40,7 +34,7 @@ public class ActivityController {
     public ResponseEntity save(@RequestBody @Valid ActivitySaveVO activityVO){
         try {
             activityService.save(activityVO.toEntity());
-            return ResponseEntity.ok("Atividade cadastrada com sucesso!");
+            return ResponseEntity.ok(HttpStatus.OK);
         } catch (Exception e ){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body( "Error ao tentar salvar atividade");
@@ -63,12 +57,15 @@ public class ActivityController {
     @CrossOrigin
     @PutMapping("{id}")
     @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_GERENTE', 'ROLE_LIDER_TECNICO')")
-    public ResponseEntity update(@PathVariable("id") @ValidActivity Long id, @RequestBody @Valid ActivityUpdateVO activitySaveVO){
+    public ResponseEntity update(@PathVariable @ValidActivity Long id, @RequestBody @Valid ActivityUpdateVO activitySaveVO){
         try {
+            if (!activitySaveVO.getId().equals(id)) {
+                throw new RuntimeException("Os ids informados nao são iguais.");
+            }
             Activity activity = activitySaveVO.toEntity();
             activity.setId(id);
             activityService.update(activity);
-            return ResponseEntity.ok("Atividade atualizada com sucesso!");
+            return ResponseEntity.ok(HttpStatus.OK);
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body( "Error ao tentar atualizar informações da atividade");
