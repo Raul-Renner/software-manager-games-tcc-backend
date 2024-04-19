@@ -28,8 +28,7 @@ public class OrganizationController {
     public ResponseEntity save(@RequestBody @Valid OrganizationSaveVO organizationSaveVO){
         try {
             organizationService.save(organizationSaveVO.toEntity());
-
-            return ResponseEntity.ok("Organization created with success!");
+            return new ResponseEntity(HttpStatus.OK);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body( "Error ao tentar criar organização");
