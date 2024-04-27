@@ -1,27 +1,20 @@
 package com.br.service;
-import com.br.dto.ActivityDepedentUpdate;
-import com.br.entities.Activity;
+
 import com.br.entities.ColumnBoard;
-import com.br.entities.Project;
-import com.br.entities.User;
+
 import com.br.fieldQueries.ActivityFieldQuery;
 import com.br.repository.ColumnBoardRepository;
-import com.br.type.ActivityFilterNoInType;
 import com.br.type.ColumnBoardFilterType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
 import static java.util.Objects.nonNull;
-import static org.springframework.data.domain.Sort.Direction.ASC;
 
 @Slf4j
 @Service
@@ -31,8 +24,6 @@ public class ColumnBoardService {
     private final ColumnBoardRepository columnBoardRepository;
 
     private final ActivityService activityService;
-
-    private final ActivityDependentService activityDependentService;
 
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
     public void save(ColumnBoard columnBoard){
@@ -82,30 +73,11 @@ public class ColumnBoardService {
                         .sectorActivity("TODO")
                         .projectId(columnBoard.getProject().getId()).build());
                 columnBoard.getActivities().forEach(activity -> {
-                    var activityNew = activityService.save(Activity.builder()
-                            .title(activity.getTitle())
-                            .description(activity.getDescription())
-                            .identifier(activity.getIdentifier())
-                            .tagsEnum(activity.getTagsEnum())
-                            .statusPriorityEnum(activity.getStatusPriorityEnum())
-                            .columnBoard(columnTodo)
-                            .project(activity.getProject())
-                            .user(nonNull(activity.getUser()) ? activity.getUser() : null)
-                            .usedTime(nonNull(activity.getUsedTime()) ? activity.getUsedTime() : "-")
-                            .isFinished(activity.getIsFinished())
-                            .isBlock(activity.getIsBlock())
-                            .sectorActivity(columnTodo.getName().toUpperCase())
-                            .estimatedTime(activity.getEstimatedTime())
-                            .build());
-                    if(nonNull(activity.getActivityDependentList()) && !activity.getActivityDependentList().isEmpty()){
-                        activityDependentService.updateActivityDependent(ActivityDepedentUpdate.builder()
-                                        .activityIdNew(activityNew)
-                                        .activityIdOld(activity.getId())
-                                        .activityDependentList(activity.getActivityDependentList())
-                                        .build());
-                    }
-
-//                activityService.updateSectorCard(activity);
+                    activity.setColumnBoard(columnTodo);
+                    activity.setSectorActivity(columnTodo.getName().toUpperCase());
+                    activityService.updateSectorCard(activity);
+                    columnBoard.setActivities(null);
+                    update(columnBoard);
                 });
             }
             columnBoardRepository.deleteById(id);

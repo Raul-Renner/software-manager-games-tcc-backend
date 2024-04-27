@@ -161,7 +161,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public Page<User> findAllUserByActivity(UserFilterPerActivityType filter){
         return userRepository.findAllUserBy(
-                filter.getOrganizationId(),
+                filter.getOrganizationId(), 
                 filter.getProjectId(),
                 filter.getActivityId(),
                 PageRequest.of(0, 9999, ASC, "id"));

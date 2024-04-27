@@ -69,8 +69,6 @@ public class ProjectController {
             if (!projectUpdateDTO.getId().equals(id)) {
                 throw new RuntimeException("Os ids do projeto repassado nao conferem.");
             }
-        //    Project project = projectUpdateVO.toEntity();
-         //   project.setId(id);
             projectService.processUpdateDesc(projectUpdateDTO);
             return ResponseEntity.ok(HttpStatus.OK);
         } catch (Exception e) {

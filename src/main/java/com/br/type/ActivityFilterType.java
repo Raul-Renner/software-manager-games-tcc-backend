@@ -9,6 +9,8 @@ import java.util.List;
 @Builder
 public class ActivityFilterType {
 
+    private Long activityId;
+
     private Long organizationId;
 
     private List<Long> userIds;

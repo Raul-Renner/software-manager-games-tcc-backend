@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.br.enums.SectorActivityEnum.TO_DO;
 import static com.br.enums.StatusPriorityEnum.LOW;
 import static com.br.enums.TagsEnum.INDEPENDENT;
 import static java.util.Objects.isNull;

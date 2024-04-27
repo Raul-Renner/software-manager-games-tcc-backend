@@ -1,6 +1,5 @@
 package com.br.controller;
 
-import com.br.entities.Organization;
 import com.br.service.OrganizationService;
 
 import com.br.validation.ValidOrganization;
@@ -43,7 +42,7 @@ public class OrganizationController {
                 if (!organizationUpdateVO.getId().equals(id)) {
                     throw new RuntimeException("Os ids da organizacao nao conferem.");
                 }
-                Organization organization = organizationUpdateVO.toEntity();
+                var organization = organizationUpdateVO.toEntity();
                 organization.setId(id);
                 organizationService.update(organization);
 

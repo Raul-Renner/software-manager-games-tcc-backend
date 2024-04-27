@@ -1,6 +1,5 @@
 package com.br.controller;
 
-import com.br.entities.Activity;
 import com.br.type.ActivityFilterType;
 import com.br.validation.ValidActivity;
 import com.br.vo.ActivitySaveVO;
@@ -62,7 +61,7 @@ public class ActivityController {
             if (!activitySaveVO.getId().equals(id)) {
                 throw new RuntimeException("Os ids informados nao são iguais.");
             }
-            Activity activity = activitySaveVO.toEntity();
+            var activity = activitySaveVO.toEntity();
             activity.setId(id);
             activityService.update(activity);
             return ResponseEntity.ok(HttpStatus.OK);
@@ -77,7 +76,7 @@ public class ActivityController {
     @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_GERENTE', 'ROLE_LIDER_TECNICO', 'ROLE_DESENVOLVEDOR')")
     public ResponseEntity updateSectorCard(@PathVariable("id") Long id, @RequestBody ActivityUpdateVO activitySaveVO){
         try {
-            Activity activity = activitySaveVO.toEntity();
+            var activity = activitySaveVO.toEntity();
             activity.setId(id);
             activityService.updateSectorCard(activity);
             return ResponseEntity.ok().build();
@@ -108,6 +107,21 @@ public class ActivityController {
         } catch (Exception e){
             return new ResponseEntity<>("Um erro inesperado ocorreu listar atividades.",
                     HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @CrossOrigin
+    @PutMapping("/assign-user-activity/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_GERENTE', 'ROLE_LIDER_TECNICO', 'ROLE_DESENVOLVEDOR')")
+    public ResponseEntity assignUserActivity(@PathVariable("id") Long id, @RequestBody ActivityUpdateVO activitySaveVO){
+        try {
+            var activity = activitySaveVO.toEntity();
+            activity.setId(id);
+
+            return new ResponseEntity (activityService.assignUserInActivity(activity), HttpStatus.OK);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body( "Error ao tentar atualizar da atividade");
         }
     }
 }

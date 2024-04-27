@@ -1,6 +1,5 @@
 package com.br.controller;
 
-import com.br.entities.ColumnBoard;
 import com.br.service.ColumnBoardService;
 import com.br.validation.ValidColumnBoard;
 import com.br.vo.ColumnBoardSaveVO;
@@ -44,7 +43,7 @@ public class ColumnBoardController {
             if (!columnBoardUpdateVO.getId().equals(id)) {
                 throw new RuntimeException("Os ids da column repassados nao conferem.");
             }
-            ColumnBoard columnBoard = columnBoardUpdateVO.toEntity();
+            var columnBoard = columnBoardUpdateVO.toEntity();
             columnBoard.setId(id);
             columnBoardService.update(columnBoard);
             return ResponseEntity.ok(HttpStatus.OK);

@@ -2,6 +2,7 @@ package com.br.service;
 
 import com.br.entities.Activity;
 import com.br.entities.ActivityDependent;
+import com.br.entities.User;
 import com.br.enums.ProfileEnum;
 import com.br.enums.StatusPriorityEnum;
 import com.br.repository.ActivityRepository;
@@ -36,6 +37,7 @@ public class ActivityService {
     private final ActivityRepository activityRepository;
 
     private final ActivityDependentService activityDependentService;
+
 
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
     public Activity save(Activity activity) {
@@ -393,7 +395,20 @@ public class ActivityService {
         return activityRepository.findAllBy(
                 filter.getOrganizationId(),
                 filter.getProjectId(),
+                filter.getActivityId(),
                 pageable);
+    }
+
+    @Transactional(rollbackFor = {Exception.class, Throwable.class})
+    public Activity assignUserInActivity(Activity activity) {
+        try {
+            var activityOld = findById(activity.getId());
+            activityOld.setUser(activity.getUser());
+
+            return activityRepository.save(activityOld);
+        } catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
 }

@@ -5,6 +5,8 @@ import com.br.type.ActivityDependentFilterType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -23,17 +25,22 @@ public class ActivityDependentController {
     @CrossOrigin
     @GetMapping
     @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_GERENTE', 'ROLE_LIDER_TECNICO', 'ROLE_DESENVOLVEDOR')")
-    public Mono<?> findAllBy(ActivityDependentFilterType filter) {
-        return just(activityDependentService.findAll(filter, PageRequest.of(0, 9999, ASC, "id")));
+    public ResponseEntity findAllBy(ActivityDependentFilterType filter) {
+        try {
+            return ResponseEntity.ok(activityDependentService.findAll(filter, PageRequest.of(0, 9999, ASC, "id")));
+        } catch (Exception e){
+            return new ResponseEntity<>("Um erro inesperado ocorreu ao buscar atividades depdentes.",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @CrossOrigin
     @DeleteMapping("{id}")
     @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_GERENTE', 'ROLE_LIDER_TECNICO')")
-    public Mono<?> delete(@PathVariable("id") Long id) {
+    public ResponseEntity delete(@PathVariable("id") Long id) {
         try {
             activityDependentService.processRemove(id);
-            return just(ok().build());
+            return ResponseEntity.ok(HttpStatus.OK);
         } catch (Exception e) {
             throw new RuntimeException("Erro ao deletar atividade.");
         }
