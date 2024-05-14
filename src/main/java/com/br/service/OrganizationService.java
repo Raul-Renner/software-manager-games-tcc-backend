@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static com.br.enums.ProfileEnum.ADMINISTRADOR;
 import static io.vavr.control.Option.ofOptional;
+import static java.util.Objects.nonNull;
 
 
 @Slf4j
@@ -23,11 +24,13 @@ public class OrganizationService {
 
     private final UserService userService;
 
+    private final EmailService emailService;
+
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
     public void save(Organization organization) {
         try {
            var organizationCopy = organizationRepository.save(organization);
-            userService.save(User.builder()
+          var userCopy =  userService.save(User.builder()
                             .userInformation(UserInformation.builder()
                                     .email(organizationCopy.getEmail())
                                     .name(organizationCopy.getName())
@@ -38,6 +41,9 @@ public class OrganizationService {
                             .profile(ADMINISTRADOR)
 
                     .build());
+          if(nonNull(userCopy)){
+              emailService.sendMail(userCopy);
+          }
 
         }catch (Exception e){
             throw new RuntimeException("Erro ao criar sua organização" );

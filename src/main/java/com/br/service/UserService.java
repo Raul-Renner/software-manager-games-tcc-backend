@@ -36,7 +36,7 @@ public class UserService {
     private final PasswordRandom passwordRandom;
 
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
-    public void save(User user) {
+    public User save(User user) {
         try {
             if(nonNull(user.getProjects()) && !user.getProjects().isEmpty()){
                 user.getProjects().forEach(project -> {
@@ -57,6 +57,8 @@ public class UserService {
                   projectService.update(project);
             });
           }
+        userCopy.setPassword(password);
+        return userCopy;
         }catch (Exception e){
             throw new RuntimeException(e.getMessage());
         }
