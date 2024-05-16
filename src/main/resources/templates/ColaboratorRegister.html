@@ -8,7 +8,10 @@
 </head>
     <body>
         <section>
-            <span> Olá <span th:text="${name}"></span>, Seja bem vindo ao nosso sistema!</span>
+            <span> Olá <span th:text="${name}"></span></span><br>
+            <span>Seja bem vindo(a)!</span><br>
+            <span>Você é o novo(a) <span th:text="${profile}"></span> da organização <span th:text="${organization}">.</span></span>
+            <br>
             <br>
             <span>Suas credenciais de acesso, são:</span><br>
             <span> Login: <span th:text="${login}"></span></span><br>

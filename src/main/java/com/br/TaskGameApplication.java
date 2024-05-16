@@ -14,13 +14,5 @@ public class TaskGameApplication {
 		SpringApplication.run(TaskGameApplication.class, args);
 	}
 
-	@Bean
-	public JavaMailSender javaMailSender() {
-		return new JavaMailSenderImpl();
-	}
 
-	@Bean
-	public TemplateEngine templateEngine() {
-		return new TemplateEngine();
-	}
 }

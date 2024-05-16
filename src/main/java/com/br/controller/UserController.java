@@ -32,7 +32,7 @@ public class UserController {
     @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_GERENTE', 'ROLE_LIDER_TECNICO')")
     public ResponseEntity save(@RequestBody @Valid UserSaveVO userSaveVO) {
         try {
-            userService.save(userSaveVO.toEntity());
+            userService.save(userSaveVO.toEntity(), true);
             return ResponseEntity.ok(HttpStatus.OK);
 
         } catch (Exception e) {

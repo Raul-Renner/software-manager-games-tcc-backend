@@ -35,8 +35,11 @@ public class UserService {
 
     private final PasswordRandom passwordRandom;
 
+    private final EmailService emailService;
+
+
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
-    public User save(User user) {
+    public void save(User user, Boolean isUser) {
         try {
             if(nonNull(user.getProjects()) && !user.getProjects().isEmpty()){
                 user.getProjects().forEach(project -> {
@@ -57,8 +60,7 @@ public class UserService {
                   projectService.update(project);
             });
           }
-        userCopy.setPassword(password);
-        return userCopy;
+            emailService.buildTemplateEmailToSendUser(user, password, isUser);
         }catch (Exception e){
             throw new RuntimeException(e.getMessage());
         }
