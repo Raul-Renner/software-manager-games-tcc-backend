@@ -2,9 +2,11 @@ package com.br.service;
 
 import com.br.entities.Mail;
 import com.br.entities.User;
+import com.br.repository.OrganizationRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,6 +31,8 @@ public class EmailService {
 
     @Value("${spring.mail.properties.mail.smtp.from}")
     private String emailFrom;
+
+    private final OrganizationRepository organizationRepository;
 
     //    public EmailService(Environment environment, JavaMailSender javaMailSender, TemplateEngine htmlTemplateEngine) {
     //        this.environment = environment;
@@ -64,7 +68,6 @@ public class EmailService {
             properties.put("password", password);
             properties.put("login", user.getLogin());
 
-
             this.sendMail(Mail.builder()
                     .to(user.getUserInformation().getEmail())
                     .from(emailFrom)
@@ -72,6 +75,9 @@ public class EmailService {
                     .subject("Organização Cadastrado com sucesso!")
                     .build());
         }else {
+
+            user.setOrganization(organizationRepository.findOrganizationById(user.getOrganization().getId()));
+
             Map<String, Object> properties = new HashMap<String, Object>();
             properties.put("name", user.getUserInformation().getName());
             properties.put("profile", user.getProfile().name());
