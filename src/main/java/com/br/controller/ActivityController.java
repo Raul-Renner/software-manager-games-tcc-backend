@@ -29,7 +29,7 @@ public class ActivityController {
 
     @CrossOrigin
     @PostMapping
-    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_GERENTE', 'ROLE_LIDER_TECNICO')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_GERENTE', 'ROLE_LIDER_TECNICO', 'ROLE_DESENVOLVEDOR')")
     public ResponseEntity save(@RequestBody @Valid ActivitySaveVO activityVO){
         try {
             activityService.save(activityVO.toEntity());

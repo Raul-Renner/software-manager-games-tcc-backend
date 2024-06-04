@@ -39,7 +39,7 @@ public class UserUpdateVO implements Serializable {
     private Long id;
 
     @NotBlank(message = "O Login é obrigatório")
-    @Size(min = 3, max = 20, message = "O nome de usuario deve conter entre 3 e 20 caracteres.")
+    @Size(min = 3, max = 40, message = "O nome de usuario deve conter entre 3 e 40 caracteres.")
     private String login;
 
 //    @NotNull(message = "A senha é obrigatório.")

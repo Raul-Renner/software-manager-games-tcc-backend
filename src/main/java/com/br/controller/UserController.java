@@ -57,7 +57,7 @@ public class UserController {
     @CrossOrigin
     @PutMapping("{id}")
     @PreAuthorize("hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_GERENTE', 'ROLE_LIDER_TECNICO', 'ROLE_DESENVOLVEDOR')")
-    public ResponseEntity update(@PathVariable("id") @Valid @ValidUser Long id, @RequestBody @Valid UserUpdateVO userUpdateVO){
+    public ResponseEntity update(@PathVariable @Valid Long id, @Valid @RequestBody UserUpdateVO userUpdateVO){
         try {
             if (!userUpdateVO.getId().equals(id)) {
                 throw new RuntimeException("Os ids do usuário repassado nao conferem.");
