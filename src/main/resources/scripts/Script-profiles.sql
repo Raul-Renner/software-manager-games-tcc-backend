@@ -1,8 +1,0 @@
-INSERT INTO profile (id_profile, decription, type_profile)
-values
-	(1,'ADMINISTRADOR','ADMINISTRADOR'),
-	(2,'DESENVOLVEDOR','DESENVOLVEDOR'),
-    (3,'GERENTE','GERENTE'),
-    (4,'DESIGNER','DESIGNER'),
-    (5,'TESTADOR','TESTADOR'),
-    (6,'LIDER_TECNICO','LIDER_TECNICO');
