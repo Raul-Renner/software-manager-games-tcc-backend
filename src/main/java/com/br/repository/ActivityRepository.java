@@ -28,19 +28,20 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
             "AND ((:userIds) IS NULL OR a.user.id NOT IN (:userIds)) " +
             "AND ((:organizationId) IS NULL OR a.user.organization.id IN :organizationId) " +
             "AND (a.user.id IS NOT NULL)")
-    Page<Activity> findAllByProj(@Param("organizationId") Long organizationId,
-                          @Param("userIds") List<Long> userIds,
-                          @Param("projectId") Long projectId,
-                          Pageable pageable);
+    Page<Activity> findAllByProjNotInUser(@Param("organizationId") Long organizationId,
+                                          @Param("userIds") List<Long> userIds,
+                                          @Param("projectId") Long projectId,
+                                          Pageable pageable);
 
     @Query("SELECT DISTINCT a FROM Activity a " +
-            "WHERE ((:columnId) IS NULL OR a.columnBoard.id IN :columnId) " +
-            "AND ((:idsActivity) IS NULL OR a.id NOT IN (:idsActivity)) " +
-            "AND ((:organizationId) IS NULL OR a.columnBoard.project.organization.id IN :organizationId) " )
-    Page<Activity> findAllByNotInUsers(@Param("organizationId") Long organizationId,
-                                       @Param("idsActivity") List<Long> idsActivity,
-                                       @Param("columnId") Long columnId,
-                                       Pageable pageable);
+            "WHERE ((:projectId) IS NULL OR a.columnBoard.project.id IN :projectId) " +
+            "AND ((:userIds) IS NULL OR a.user.id IN (:userIds)) " +
+            "AND ((:organizationId) IS NULL OR a.user.organization.id IN :organizationId) " +
+            "AND (a.user.id IS NOT NULL)")
+    Page<Activity> findAllByProjAndUser(@Param("organizationId") Long organizationId,
+                                          @Param("userIds") List<Long> userIds,
+                                          @Param("projectId") Long projectId,
+                                          Pageable pageable);
 
     @Query("SELECT DISTINCT a FROM Activity a " +
             "WHERE ((:activityId) IS NULL OR a.id IN :activityId) " +

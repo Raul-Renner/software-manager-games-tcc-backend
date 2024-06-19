@@ -47,13 +47,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
             "WHERE id_user =:userId AND id_project=:projectId", nativeQuery = true)
     void deleteUserProject(@Param("userId") Long userId,@Param("projectId") Long projectId);
 
-    @Query("SELECT p FROM Project p " +
-            "LEFT JOIN p.members mb ON p.organization.id = mb.organization.id " +
-            "WHERE ((:organizationId) IS NULL OR p.organization.id IN :organizationId) " +
-            "AND ((:userId) IS NULL OR p.id IN :userId) ")
-    Page<Project> findProjectIncludeUser(@Param("organizationId") Long organizationId,
-                          @Param("userId") Boolean userId,
-                          Pageable pageable);
+
 
 
 }

@@ -2,12 +2,9 @@ package com.br.service;
 
 import com.br.entities.Activity;
 import com.br.entities.ActivityDependent;
-import com.br.entities.User;
-import com.br.enums.ProfileEnum;
 import com.br.enums.StatusPriorityEnum;
 import com.br.repository.ActivityRepository;
 import com.br.type.ActivityDependentFilterType;
-import com.br.type.ActivityFilterNoInType;
 import com.br.type.ActivityFilterType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -376,14 +373,28 @@ public class ActivityService {
 
 
     @Transactional(readOnly = true)
-    public Page<Activity> findAllByProj(ActivityFilterType filter, Pageable pageable) {
+    public Page<Activity> findAllByProjNotInUser(ActivityFilterType filter, Pageable pageable) {
         try {
-            var test = activityRepository.findAllByProj(
+            var test = activityRepository.findAllByProjNotInUser(
                     filter.getOrganizationId(),
                     filter.getUserIds(),
                     filter.getProjectId(),
                     pageable);
             return test;
+        } catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Activity> findAllByProjAndUser(ActivityFilterType filter, Pageable pageable) {
+        try {
+            return activityRepository.findAllByProjAndUser(
+                    filter.getOrganizationId(),
+                    filter.getUserIds(),
+                    filter.getProjectId(),
+                    pageable);
         } catch (Exception e){
             throw new RuntimeException(e.getMessage());
         }
