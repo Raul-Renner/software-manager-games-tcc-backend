@@ -27,7 +27,7 @@ public class ColumnBoardService {
 
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
     public void save(ColumnBoard columnBoard){
-        columnBoard.setSectorActivity(columnBoard.getName().toUpperCase());
+        columnBoard.setName(columnBoard.getName().toUpperCase());
         columnBoardRepository.save(columnBoard);
     }
 
@@ -110,7 +110,7 @@ public class ColumnBoardService {
         save(ColumnBoard.builder()
                         .project(columnBoard.getProject())
                         .name("ToDo")
-                        .sectorActivity("TO_DO")
+                        .sectorActivity("TODO")
                         .phase("INITIAL")
                         .build());
 
