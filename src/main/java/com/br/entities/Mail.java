@@ -9,6 +9,14 @@ import java.util.Map;
 @Builder
 public class Mail {
 
+    private String from;
+
+    private String to;
+
+    private String subject;
+
+    private HtmlTemplate htmlTemplate;
+
     @Data
     public static class HtmlTemplate {
         private String template;
@@ -21,13 +29,5 @@ public class Mail {
         }
 
     }
-
-    private String from;
-
-    private String to;
-
-    private String subject;
-
-    private HtmlTemplate htmlTemplate;
 
 }
