@@ -359,7 +359,7 @@ public class ActivityService {
             if(activityRepository.allDependenciesCompleted(activityDependent.getActivityBranch().getId())){
                 var activity = activityRepository.findByActivityId(activityDependent.getActivityBranch().getId());
                 activity.setIsBlock(false);
-                activity.setTagsEnum(INDEPENDENT);
+                //activity.setTagsEnum(INDEPENDENT);
                 activityRepository.save(activity);
             }
         });

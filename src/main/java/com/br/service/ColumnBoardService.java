@@ -27,6 +27,7 @@ public class ColumnBoardService {
 
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
     public void save(ColumnBoard columnBoard){
+        columnBoard.setSectorActivity(columnBoard.getName().toUpperCase());
         columnBoard.setName(columnBoard.getName().toUpperCase());
         columnBoardRepository.save(columnBoard);
     }
