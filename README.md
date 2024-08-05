@@ -150,5 +150,3 @@ docker run -d --name minha-api-spring  -p 9090:8081 minha-api-spring
   O sistema permite que usuários com perfil: ADMINISTRADOR e GERENTE
   possam remover atividades da lista de dependências de uma atividade dependente registrada no
   sistema de um projeto específico.
-
-
