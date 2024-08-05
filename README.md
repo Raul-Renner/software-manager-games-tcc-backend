@@ -150,3 +150,14 @@ docker run -d --name minha-api-spring  -p 9090:8081 minha-api-spring
   O sistema permite que usuários com perfil: ADMINISTRADOR e GERENTE
   possam remover atividades da lista de dependências de uma atividade dependente registrada no
   sistema de um projeto específico.
+
+
+ ## Algumas telas da ferramenta
+[Imagem 1](https://github.com/Raul-Renner/software-manager-games-tcc-backend/blob/main/src/main/resources/screens-backend/image-backend-1.png)
+
+[Imagem 2](https://github.com/Raul-Renner/software-manager-games-tcc-backend/blob/main/src/main/resources/screens-backend/image-backend-2.png)
+
+[Imagem 3](https://github.com/Raul-Renner/software-manager-games-tcc-backend/blob/main/src/main/resources/screens-backend/image-backend-3.png)
+
+
+[Imagem 4](https://github.com/Raul-Renner/software-manager-games-tcc-backend/blob/main/src/main/resources/screens-backend/image-backend-4.png)
