@@ -20,7 +20,7 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
 
     @Query("SELECT COUNT(a) = 0 FROM Activity a WHERE EXISTS( " +
             " SELECT ad FROM ActivityDependent ad WHERE ad.activityBranch.id = :activityBranchId " +
-            " AND ad.activitySource = a.id AND a.sectorActivity != 'DONE') ")
+            " AND ad.activitySource = a.id AND a.sectorActivity != 'FEITO') ")
     Boolean allDependenciesCompleted(Long activityBranchId);
 
     @Query("SELECT DISTINCT a FROM Activity a " +
