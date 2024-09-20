@@ -2,12 +2,9 @@ package com.br.service;
 
 import com.br.entities.Activity;
 import com.br.entities.ActivityDependent;
-import com.br.entities.User;
-import com.br.enums.ProfileEnum;
 import com.br.enums.StatusPriorityEnum;
 import com.br.repository.ActivityRepository;
 import com.br.type.ActivityDependentFilterType;
-import com.br.type.ActivityFilterNoInType;
 import com.br.type.ActivityFilterType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,7 +53,7 @@ public class ActivityService {
                 }
             }
             if(nonNull(activity.getActivityDependentList()) && !activity.getActivityDependentList().isEmpty()){
-                if(activity.getSectorActivity().equals("DONE")){
+                if(activity.getSectorActivity().equals("FEITO")){
                     activity.setIsBlock(false);
 
                 }else{
@@ -230,7 +227,7 @@ public class ActivityService {
 
                 }
             }
-            if(activity.getSectorActivity().equals("DONE")){
+            if(activity.getSectorActivity().equals("FEITO")){
                 activityRepository.save(activity);
                 checkDependents(activity.getId());
             }else{
@@ -291,7 +288,7 @@ public class ActivityService {
         if(nonNull(activityAux.getUser())){
             activity.setUser(activityAux.getUser());
         }
-        if(activity.getSectorActivity().equals("DONE")){
+        if(activity.getSectorActivity().equals("FEITO")){
             activityRepository.save(activity);
             checkDependents(activity.getId());
         }else{
@@ -331,14 +328,14 @@ public class ActivityService {
                 }
             }
 
-            if(activityAux.getSectorActivity().equals("DONE")){
+            if(activityAux.getSectorActivity().equals("FEITO")){
                 var activitySaved = activityRepository.save(activity);
                 var activitiesDependents = activityDependentService.findAll(ActivityDependentFilterType.builder().activitySource(activitySaved.getId()).build(),
                         PageRequest.of(0, 9999, ASC, "id"));
                 if(nonNull(activitiesDependents) && !activitiesDependents.isEmpty()){
                     activitiesDependents.forEach(activityDependent -> {
                         var activityUpdate = findById(activityDependent.getActivityBranch().getId());
-                        if(!activityUpdate.getSectorActivity().equals("DONE")){
+                        if(!activityUpdate.getSectorActivity().equals("FEITO")){
                             activityUpdate.setTagsEnum(DEPENDENT);
                             activityUpdate.setIsBlock(true);
                         }
@@ -362,7 +359,7 @@ public class ActivityService {
             if(activityRepository.allDependenciesCompleted(activityDependent.getActivityBranch().getId())){
                 var activity = activityRepository.findByActivityId(activityDependent.getActivityBranch().getId());
                 activity.setIsBlock(false);
-                activity.setTagsEnum(INDEPENDENT);
+                //activity.setTagsEnum(INDEPENDENT);
                 activityRepository.save(activity);
             }
         });
@@ -376,14 +373,28 @@ public class ActivityService {
 
 
     @Transactional(readOnly = true)
-    public Page<Activity> findAllByProj(ActivityFilterType filter, Pageable pageable) {
+    public Page<Activity> findAllByProjNotInUser(ActivityFilterType filter, Pageable pageable) {
         try {
-            var test = activityRepository.findAllByProj(
+            var test = activityRepository.findAllByProjNotInUser(
                     filter.getOrganizationId(),
                     filter.getUserIds(),
                     filter.getProjectId(),
                     pageable);
             return test;
+        } catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Activity> findAllByProjAndUser(ActivityFilterType filter, Pageable pageable) {
+        try {
+            return activityRepository.findAllByProjAndUser(
+                    filter.getOrganizationId(),
+                    filter.getUserIds(),
+                    filter.getProjectId(),
+                    pageable);
         } catch (Exception e){
             throw new RuntimeException(e.getMessage());
         }

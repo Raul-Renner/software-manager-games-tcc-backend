@@ -73,7 +73,7 @@ public class UserService {
             var projectsIds = new ArrayList<Long>();
             if(nonNull(user.getProjects()) && !user.getProjects().isEmpty()){
                 user.getProjects().forEach(project -> projectsIds.add(project.getId()));
-                projectService.processUpdateProjectsUser(id, user.getOrganization().getId(), projectsIds);
+                projectService.processUpdateProjectsInDeleteUser(id, user.getOrganization().getId(), projectsIds);
             }
             delete(id);
         }catch (Exception e){

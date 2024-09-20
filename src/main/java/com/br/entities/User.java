@@ -14,8 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-import static jakarta.persistence.CascadeType.ALL;
-import static jakarta.persistence.CascadeType.REMOVE;
+import static jakarta.persistence.CascadeType.*;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.EAGER;
 import static jakarta.persistence.FetchType.LAZY;
@@ -50,14 +49,14 @@ public class User implements UserDetails {
     @JoinColumn(name = "id_organization")
     private Organization organization;
 
-    @ManyToMany(mappedBy = "members", cascade = REMOVE, fetch = LAZY)
+    @ManyToMany(mappedBy = "members", fetch = LAZY)
     private List<Project> projects;
 
     @Enumerated(STRING)
     @Column(name = "tp_profile")
     private ProfileEnum profile;
 
-    @OneToMany(mappedBy = "user", cascade = REMOVE, fetch = EAGER)
+    @OneToMany(mappedBy = "user", fetch = EAGER)
     private List<Activity> activities;
 
 

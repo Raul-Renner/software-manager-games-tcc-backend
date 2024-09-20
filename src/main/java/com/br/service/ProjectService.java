@@ -43,6 +43,7 @@ public class ProjectService {
             throw new RuntimeException("Erro ao criar novo projeto");
         }
     }
+    @Transactional(rollbackFor = {Exception.class, Throwable.class})
     public void processUpdate(Project project){
         var userIds = new ArrayList<Long>();
         if(nonNull(project.getMembers())){
@@ -50,7 +51,7 @@ public class ProjectService {
         }
         var projectOld = findProjectById(project.getId());
         if(nonNull(projectOld.getMembers()) && !projectOld.getMembers().isEmpty()){
-            var activities = activityService.findAllByProj(ActivityFilterType.builder()
+            var activities = activityService.findAllByProjNotInUser(ActivityFilterType.builder()
                     .userIds(userIds)
                     .organizationId(project.getOrganization().getId())
                     .projectId(project.getId())
@@ -136,6 +137,7 @@ public class ProjectService {
             if(!projectsDeleteUser.isEmpty()){
                 projectsDeleteUser.getContent().forEach(project -> {
                     projectRepository.deleteUserProject(userId, project.getId());
+                    deleteUserInActivityProject(project.getId(), orgId, List.of(userId));
                 });
             }
         }catch (Exception e){
@@ -174,6 +176,36 @@ public class ProjectService {
         project.setName(updateDTO.getName());
         project.setDescription(updateDTO.getDescription());
     }
+
+    @Transactional(rollbackFor = {Exception.class, Throwable.class})
+    public void processUpdateProjectsInDeleteUser(Long userId, Long orgId, List<Long> projectListIds) {
+        try {
+            if(!projectListIds.isEmpty()){
+                projectListIds.forEach(id -> {
+                    projectRepository.deleteUserProject(userId, id);
+                    deleteUserInActivityProject(id, orgId, List.of(userId));
+                });
+            }
+        }catch (Exception e){
+            throw new RuntimeException("Erro ao atualizar projectos usuário: " + userId);
+        }
+
+    }
+
+private void deleteUserInActivityProject(Long projectId, Long orgId, List<Long> usersIds){
+    var activities = activityService.findAllByProjAndUser(ActivityFilterType.builder()
+            .userIds(usersIds)
+            .organizationId(orgId)
+            .projectId(projectId)
+            .build(), PageRequest.of(0, 9999, ASC, "id"));
+
+    if(nonNull(activities)){
+        activities.forEach(activity -> {
+            activity.setUser(null);
+            activityService.update(activity);
+        });
+    }
+}
 
 
 }
