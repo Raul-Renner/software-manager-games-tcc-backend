@@ -53,7 +53,7 @@ public class ActivityService {
                 }
             }
             if(nonNull(activity.getActivityDependentList()) && !activity.getActivityDependentList().isEmpty()){
-                if(activity.getSectorActivity().equals("DONE")){
+                if(activity.getSectorActivity().equals("FEITO")){
                     activity.setIsBlock(false);
 
                 }else{
@@ -227,7 +227,7 @@ public class ActivityService {
 
                 }
             }
-            if(activity.getSectorActivity().equals("DONE")){
+            if(activity.getSectorActivity().equals("FEITO")){
                 activityRepository.save(activity);
                 checkDependents(activity.getId());
             }else{
@@ -288,7 +288,7 @@ public class ActivityService {
         if(nonNull(activityAux.getUser())){
             activity.setUser(activityAux.getUser());
         }
-        if(activity.getSectorActivity().equals("DONE")){
+        if(activity.getSectorActivity().equals("FEITO")){
             activityRepository.save(activity);
             checkDependents(activity.getId());
         }else{
@@ -328,14 +328,14 @@ public class ActivityService {
                 }
             }
 
-            if(activityAux.getSectorActivity().equals("DONE")){
+            if(activityAux.getSectorActivity().equals("FEITO")){
                 var activitySaved = activityRepository.save(activity);
                 var activitiesDependents = activityDependentService.findAll(ActivityDependentFilterType.builder().activitySource(activitySaved.getId()).build(),
                         PageRequest.of(0, 9999, ASC, "id"));
                 if(nonNull(activitiesDependents) && !activitiesDependents.isEmpty()){
                     activitiesDependents.forEach(activityDependent -> {
                         var activityUpdate = findById(activityDependent.getActivityBranch().getId());
-                        if(!activityUpdate.getSectorActivity().equals("DONE")){
+                        if(!activityUpdate.getSectorActivity().equals("FEITO")){
                             activityUpdate.setTagsEnum(DEPENDENT);
                             activityUpdate.setIsBlock(true);
                         }
